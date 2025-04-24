@@ -5,7 +5,8 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.document.Disease;
+
+import org.example.document.Diseases;
 import org.example.dto.DiseaseDto;
 import org.example.dto.PageResult;
 import org.example.dto.UsersDto;
@@ -33,19 +34,19 @@ public class DiseasesServices {
     private final DiseasesMapper mapper;
 
     public DiseaseDto create(DiseaseDto dto) {
-        Disease diseases = mapper.toEntity(dto);
-        Disease savedDisease = repository.save(diseases);
+        Diseases diseases = mapper.toEntity(dto);
+        Diseases savedDisease = repository.save(diseases);
         return mapper.toDto(savedDisease);
     }
 
 
     public Page<DiseaseDto> search(String dName, Pageable pageable) {
-        Specification<Disease> spec = buildSearchSpec(dName);
+        Specification<Diseases> spec = buildSearchSpec(dName);
         return repository.findAll(spec,pageable)
                 .map(mapper::toDto);
     }
 
-        private Specification<Disease> buildSearchSpec(String dName){
+        private Specification<Diseases> buildSearchSpec(String dName){
             return ((root, query, cb) ->{
                 List<Predicate> predicates = new ArrayList<>();
 

@@ -46,7 +46,7 @@ public class Plants {
     private String commonDiseases;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id",nullable = false)
     private Users user; // Relationship with the Users table
 
 

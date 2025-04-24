@@ -18,7 +18,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Data
 @Builder
-public class Reminder {
+public class Reminders {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,14 +26,14 @@ public class Reminder {
     private Integer reminderId;
 
     @ManyToOne//(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user",referencedColumnName = "user_id",nullable = false)
+    @JoinColumn(name = "user_id",referencedColumnName = "user_id",nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @NotEmpty
     private Users user;
 
     @ManyToOne
-    @JoinColumn(name = "plant",referencedColumnName = "plant_id",nullable = false)
+    @JoinColumn(name = "plant_id",referencedColumnName = "plant_id",nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @NotEmpty

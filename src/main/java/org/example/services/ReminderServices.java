@@ -3,7 +3,7 @@ package org.example.services;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.example.document.Plants;
-import org.example.document.Reminder;
+import org.example.document.Reminders;
 import org.example.dto.PageResult;
 import org.example.dto.ReminderDto;
 import org.example.exception.ReminderNotFoundException;
@@ -32,22 +32,22 @@ public class ReminderServices {
     private final UserRepository userRepository;
 
     public ReminderDto create(ReminderDto dto) {
-        Reminder reminder = mapper.toEntity(dto);
-        Reminder result= repository.save(reminder);
+        Reminders reminder = mapper.toEntity(dto);
+        Reminders result= repository.save(reminder);
         return mapper.toDto(result);
     }
 
     public void delete(Integer reminderId) {
-        Reminder reminder = repository.findById(reminderId)
+        Reminders reminder = repository.findById(reminderId)
                 .orElseThrow(()-> new ReminderNotFoundException("Reminder not found"));
         repository.delete(reminder);
     }
 
     public ReminderDto update(Integer reminderId, ReminderDto dto) {
-        Reminder reminder = repository.findById(reminderId).orElseThrow(()->new ReminderNotFoundException("Reminder not found"));
+        Reminders reminder = repository.findById(reminderId).orElseThrow(()->new ReminderNotFoundException("Reminder not found"));
         mapper.updateToEntity(dto,reminder);
 
-        Reminder updateReminder = repository.save(reminder);
+        Reminders updateReminder = repository.save(reminder);
         return mapper.toDto(updateReminder);
     }
 
@@ -67,7 +67,7 @@ public class ReminderServices {
     }
 
     public PageResult<ReminderDto> search(String plant, String reminderType, Pageable pageable) {
-        Specification<Reminder> spec = (root, query, cb) -> {
+        Specification<Reminders> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
             if (plant != null) {
                 predicates.add(cb.like(root.get("plant"), "%" + plant + "%"));
@@ -77,7 +77,7 @@ public class ReminderServices {
             }
             return cb.and(predicates.toArray(new Predicate[0]));
         };
-        Page<Reminder> reminderPage = repository.findAll(spec, pageable);
+        Page<Reminders> reminderPage = repository.findAll(spec, pageable);
         List<ReminderDto> reminderDtos = reminderPage.getContent()
                 .stream()
                 .map(mapper::toDto)

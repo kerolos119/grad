@@ -3,7 +3,8 @@ package org.example.services;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.example.document.Product;
+
+import org.example.document.Products;
 import org.example.dto.PageResult;
 import org.example.dto.ProductDto;
 import org.example.exception.InvalidCategoryException;
@@ -33,22 +34,22 @@ public class ProductServices {
 
 
     public ProductDto create(ProductDto dto) {
-        Product product = mapper.toEntity(dto);
-        Product result = repository.save(product);
+        Products product = mapper.toEntity(dto);
+        Products result = repository.save(product);
         return mapper.toDto(result);
     }
 
     public void delete(Long productId) {
-        Product product = (Product) repository.findById(productId)
+        Products product = (Products) repository.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException(" Product Not Found "));
         repository.delete(product);
     }
 
     public ProductDto update(Long productId, ProductDto dto) {
-        Product product = (Product) repository.findById(productId)
+        Products product = (Products) repository.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException(" Product Not Found"));
         mapper.updateToEntity(dto,product);
-        Product result = repository.save(product);
+        Products result = repository.save(product);
         return mapper.toDto(result);
     }
 
@@ -96,7 +97,7 @@ public class ProductServices {
     // Fixed search method
     public PageResult<ProductDto> search(String productName, String category, String price,
                                          String sellerAddress, String sellerPhone, Pageable pageable) {
-        Specification<Product> spec = (root, query, cb) -> {
+        Specification<Products> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             if (productName != null && !productName.isBlank()) {
@@ -127,7 +128,7 @@ public class ProductServices {
             return cb.and(predicates.toArray(new Predicate[0]));
         };
 
-        Page<Product> productPage = repository.findAll(spec, pageable);
+        Page<Products> productPage = repository.findAll(spec, pageable);
 
         List<ProductDto> productDtos = productPage.getContent()
                 .stream()

@@ -22,7 +22,7 @@ public  class Users  extends Auditable {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(name = "user_name", length = 50, nullable = false,unique = true)
+    @Column(name = "name", length = 50, nullable = false,unique = true)
     @NotBlank(message = "Name required")
     @Size(max = 50, message = "Name cannot exceed 50 characters")
     private String username;

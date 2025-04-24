@@ -1,7 +1,8 @@
 package org.example.repo;
 
 import jakarta.validation.constraints.NotBlank;
-import org.example.document.Product;
+
+import org.example.document.Products;
 import org.example.model.ProductCategory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,12 +14,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product,Long> {
+public interface ProductRepository extends JpaRepository<Products,Long> {
 
-    Optional<Product> findByProductName(String productName);
+    Optional<Products> findByProductName(String productName);
 
-    Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+    Page<Products> findAll(Specification<Products> spec, Pageable pageable);
 
-    Optional<Product> findByProductId(Long productId); // تغيير اسم الدالة
+    Optional<Products> findByProductId(Long productId); // تغيير اسم الدالة
 //    List<Product> findByCategory(ProductCategory category);
 }

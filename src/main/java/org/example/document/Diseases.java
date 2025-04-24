@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Disease {
+public class Diseases {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "disease_id")
     private Long diseaseId;
 
-    @Column(name = "name",length = 50 ,nullable = false)
+    @Column(name = "disease_name",length = 50 ,nullable = false)
     @NotBlank(message = "Disease name is required")
     private String dName;
 

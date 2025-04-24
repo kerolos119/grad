@@ -14,14 +14,14 @@ import java.util.Optional;
 @NoArgsConstructor
 @Data
 @Builder
-public class Product {
+public class Products {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id")
     private Long productId;
 
-    @Column(name = "name",columnDefinition = "TEXT",length = 50,nullable = false)
+    @Column(name = "product_name",columnDefinition = "TEXT",length = 50,nullable = false)
     @NotBlank(message ="Product name is required" )
     @Size(max = 50,message = "Name cannot exceed 50 characters ")
     private String productName;
@@ -47,8 +47,8 @@ public class Product {
 
     @ManyToOne//(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",referencedColumnName = "user_id",nullable = false)
-//    @ToString.Exclude
-//    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Users user;
 
 

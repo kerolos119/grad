@@ -1,7 +1,6 @@
 package org.example.services;
 
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.document.Plants;
@@ -15,7 +14,6 @@ import org.example.repo.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -42,8 +40,8 @@ public class PlantsServices {
                 .stream().map(plantMapper::toDto).collect(Collectors.toList());
     }
 
-    public PlantDto update(Integer plantId, PlantDto plantDto) {
-        Plants existingPlant = plantRepository.findById(plantId)
+    public PlantDto update(Long plantId, PlantDto plantDto) {
+        Plants existingPlant = plantRepository.findById(Math.toIntExact(plantId))
                 .orElseThrow(()-> new PlantNotFoundException(" Plant not found"));
 
         plantMapper.updateToEntity(plantDto,existingPlant);
@@ -51,8 +49,8 @@ public class PlantsServices {
         return plantMapper.toDto(updatePlant);
     }
 
-    public void delete(Integer plantId) {
-        plantRepository.deleteById(plantId);
+    public void delete(Long plantId) {
+        plantRepository.deleteById(Math.toIntExact(plantId));
     }
 
     public PlantDto findByPlantName(String plantName) {
@@ -64,8 +62,8 @@ public class PlantsServices {
                 .map(plantMapper::toDto)
                 .orElseThrow(()->new PlantNotFoundException("Plant not found with name" + plantName));
     }
-    public PlantDto getPlantById(Integer plantId) {
-        return plantRepository.findById(plantId)
+    public PlantDto getPlantById(Long plantId) {
+        return plantRepository.findById(Math.toIntExact(plantId))
                 .map(plantMapper::toDto)
                 .orElseThrow(() -> new PlantNotFoundException("Plant not found"));
     }

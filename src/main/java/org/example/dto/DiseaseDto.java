@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiseasesDto {
+public class DiseaseDto {
     @NotBlank(message = "Disease name is required")
     private String dName;
 

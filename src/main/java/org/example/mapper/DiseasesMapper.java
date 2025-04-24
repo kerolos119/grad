@@ -1,18 +1,18 @@
 package org.example.mapper;
 
-import org.example.document.Diseases;
-import org.example.dto.DiseasesDto;
+import org.example.document.Disease;
+import org.example.dto.DiseaseDto;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DiseasesMapper extends AbstractMapper<DiseasesDto, Diseases> {
+public class DiseasesMapper extends AbstractMapper<DiseaseDto, Disease> {
     public DiseasesMapper(){
-        super(DiseasesDto.class,Diseases.class);
+        super(DiseaseDto.class,Disease.class);
     }
 
 
     @Override
-    public Diseases updateToEntity(DiseasesDto dto, Diseases entity) {
+    public Disease updateToEntity(DiseaseDto dto, Disease entity) {
         return null;
     }
 }

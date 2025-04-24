@@ -8,13 +8,15 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper extends AbstractMapper<UsersDto,Users>{
 
+    public static AbstractMapper<UsersDto,Users> INSTANCE;
+
     public UserMapper() {
         super(UsersDto.class, Users.class);
     }
 
     @Override
     public Users updateToEntity(UsersDto dto, Users entity) {
-        entity.setUserName(dto.getUserName());
+        entity.setUsername(dto.getUsername());
         entity.setEmail(dto.getEmail());
         entity.setPhonenumber(dto.getPhoneNumber());
         entity.setPassword(dto.getPassword());

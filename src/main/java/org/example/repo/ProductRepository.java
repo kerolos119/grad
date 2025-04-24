@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ProductRepository extends JpaRepository<Product,Integer> {
+public interface ProductRepository extends JpaRepository<Product,Long> {
 
     Optional<Product> findByProductName(String productName);
 
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+
+    Optional<Product> findByProductId(Long productId); // تغيير اسم الدالة
 //    List<Product> findByCategory(ProductCategory category);
 }

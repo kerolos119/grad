@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,19 +19,22 @@ public class ProductController {
     private final ProductServices services;
 
     @PostMapping("/product")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductDto> create(@RequestBody ProductDto dto){
         ProductDto result= services.create(dto);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{productId}")
-    public ResponseEntity<Void> delete(@PathVariable Integer productId){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable Long productId){
         services.delete(productId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{productId}")
-    public ResponseEntity<ProductDto> update(@PathVariable Integer productId , @RequestBody ProductDto dto){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductDto> update(@PathVariable Long productId , @RequestBody ProductDto dto){
         ProductDto update= services.update(productId,dto);
         return ResponseEntity.ok(update);
     }

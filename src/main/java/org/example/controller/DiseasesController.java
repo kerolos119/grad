@@ -1,46 +1,65 @@
 package org.example.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.dto.DiseasesDto;
+import org.example.dto.DiseaseDto;
 import org.example.dto.PageResult;
+import org.example.dto.PageUtils;
+import org.example.dto.UsersDto;
+import org.example.model.ApiResponse;
 import org.example.services.DiseasesServices;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+
 @RestController
-@RequestMapping("/api/diseases")
+@RequestMapping("/api/v1/diseases")
 @RequiredArgsConstructor
-@ControllerAdvice
 public class DiseasesController {
 
     private final DiseasesServices services;
 
     @PostMapping
-    public ResponseEntity<DiseasesDto> create( @Valid @RequestBody DiseasesDto dto){
-        DiseasesDto result= services.create(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<DiseaseDto> create
+            (@Valid @RequestBody DiseaseDto dto){
+        DiseaseDto diseases = services.create(dto);
+        return ApiResponse.created(diseases);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Integer id){
-        services.delete(id);
-        return ResponseEntity.noContent().build();
-    }
 
     @GetMapping("/search")
-    public PageResult<DiseasesDto> search(
+    public ApiResponse<PageResult<DiseaseDto>> search(
             @RequestParam(required = false) String dName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dName") String sortBy,
-            @RequestParam(defaultValue = "ASC") Sort.Direction direction){
-        Pageable pageable = PageRequest.of(page,size,Sort.by(direction,sortBy));
-        PageResult<DiseasesDto> result = services.search(dName,pageable);
-        return result;
+            @RequestParam(defaultValue = "name,asc") String[] sort) {
+
+        Sort sorting = Sort.by(parseSortOrders(sort));
+        Pageable pageable = PageRequest.of(page,size,sorting);
+
+        Page<DiseaseDto> pageData = services.search(dName,pageable);
+
+        PageResult<DiseaseDto> result = PageUtils.toPageResult(pageData);
+
+        return ApiResponse.success(result,"search result");
+    }
+
+    private Sort.Order[] parseSortOrders(String[] sort) {
+        return Arrays.stream(sort)
+                .map(s->s.split(","))
+                .map(parts->new Sort.Order(
+                        Sort.Direction.fromString(parts[1]),
+                        parts[0]))
+                .toArray(Sort.Order[]::new);
+
     }
 }

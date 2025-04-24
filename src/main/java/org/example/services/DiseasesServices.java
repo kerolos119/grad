@@ -3,16 +3,22 @@ package org.example.services;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.document.Diseases;
-import org.example.dto.DiseasesDto;
+import org.example.document.Disease;
+import org.example.dto.DiseaseDto;
 import org.example.dto.PageResult;
+import org.example.dto.UsersDto;
+import org.example.exception.DiseaseException;
+import org.example.exception.UserException;
 import org.example.mapper.DiseasesMapper;
+import org.example.mapper.UserMapper;
 import org.example.repo.DiseaseRepository;
 import org.example.repo.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,43 +29,35 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 public class DiseasesServices {
-    private final UserRepository userRepository;
     private final DiseaseRepository repository;
     private final DiseasesMapper mapper;
 
-    public DiseasesDto create(DiseasesDto dto) {
-        Diseases diseases = mapper.toEntity(dto);
-        Diseases savedDisease = repository.save(diseases);
+    public DiseaseDto create(DiseaseDto dto) {
+        Disease diseases = mapper.toEntity(dto);
+        Disease savedDisease = repository.save(diseases);
         return mapper.toDto(savedDisease);
     }
 
-    public void delete(int id) {
-        Diseases diseases = repository.findById(id)
-                        .orElseThrow(()-> new EntityNotFoundException("Diseases not found"));
-        repository.deleteById(id);
+
+    public Page<DiseaseDto> search(String dName, Pageable pageable) {
+        Specification<Disease> spec = buildSearchSpec(dName);
+        return repository.findAll(spec,pageable)
+                .map(mapper::toDto);
     }
 
-    public PageResult<DiseasesDto> search(String dName, Pageable pageable) {
-        Specification<Diseases> spec=(root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            if (dName != null){
-                predicates.add(cb.like(root.get("name"),"%" + dName + "%"));
-            }
-            return cb.and(predicates.toArray(predicates.toArray(new Predicate[0])));
-        };
-        Page<Diseases> diseases = repository.findAll(spec,pageable);
+        private Specification<Disease> buildSearchSpec(String dName){
+            return ((root, query, cb) ->{
+                List<Predicate> predicates = new ArrayList<>();
 
-        List<DiseasesDto> diseasesDtos = diseases.getContent()
-                .stream()
-                .map(mapper::toDto)
-                .collect(Collectors.toList());
+                if ((dName != null && !dName.isEmpty())){
+                    predicates.add(cb.like(
+                            cb.lower(root.get("name")),
+                            "%" + dName.toLowerCase() + "%"
+                    ));
+                }
+                return cb.and(predicates.toArray(new Predicate[0]));
+            } );
+        }
 
-        return new PageResult<>(
-                diseasesDtos,
-                diseases.getTotalElements(),
-                diseases.getTotalPages(),
-                diseases.getNumber() +1,
-                diseases.getSize()
-        );
+
     }
-}

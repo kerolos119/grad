@@ -12,7 +12,12 @@ public class Credentials {
     @NotEmpty
     private String username;
     @NotEmpty
-    private String password;
+    public String password;
     @NotEmpty
     private String email;
+
+
+    public CharSequence password() {
+        return password();
+    }
 }

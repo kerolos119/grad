@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,24 +23,27 @@ public class PlantsController {
 //    @Autowired
 //    PlantsServices services;
     @PostMapping("/plant")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlantDto> create(@RequestBody PlantDto plantDto){
         return new ResponseEntity<>(plantsServices.create(plantDto), HttpStatus.CREATED);
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PlantDto>> getAllPlantsByUser(@PathVariable Long userId ){
-        List<PlantDto> plantDtoList = plantsServices.getAllPlantsByUser(userId);
+    @GetMapping("/plants/{plantId}")
+    public ResponseEntity<List<PlantDto>> getAllPlantsByUser(@PathVariable Long plantId ){
+        List<PlantDto> plantDtoList = plantsServices.getAllPlantsByUser(plantId);
         return ResponseEntity.ok(plantDtoList);
     }
 
     @PutMapping("/{plantId}")
-    public ResponseEntity<PlantDto> update(@PathVariable Integer plantId , @RequestBody PlantDto plantDto){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<PlantDto> update(@PathVariable Long plantId , @RequestBody PlantDto plantDto){
        PlantDto update= plantsServices.update(plantId,plantDto);
         return ResponseEntity.ok(update);
     }
 
     @DeleteMapping("/{plantId}")
-    public ResponseEntity<Void> delete (@PathVariable Integer plantId){
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> delete (@PathVariable Long plantId){
         plantsServices.delete(plantId);
         return ResponseEntity.noContent().build();
     }
@@ -63,7 +67,7 @@ public class PlantsController {
     }
     // في الـ Controller
     @GetMapping("/{plantId}")
-    public ResponseEntity<PlantDto> getPlant(@PathVariable Integer plantId) {
+    public ResponseEntity<PlantDto> getPlant(@PathVariable Long plantId) {
         PlantDto plant = plantsServices.getPlantById(plantId);
         return ResponseEntity.ok(plant);
     }

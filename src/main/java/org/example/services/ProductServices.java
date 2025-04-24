@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.document.Product;
 import org.example.dto.PageResult;
 import org.example.dto.ProductDto;
+import org.example.exception.InvalidCategoryException;
 import org.example.exception.ProductNotFoundException;
 import org.example.mapper.ProductMapper;
 import org.example.model.ProductCategory;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,14 +38,14 @@ public class ProductServices {
         return mapper.toDto(result);
     }
 
-    public void delete(Integer productId) {
-        Product product = repository.findById(productId)
+    public void delete(Long productId) {
+        Product product = (Product) repository.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException(" Product Not Found "));
         repository.delete(product);
     }
 
-    public ProductDto update(Integer productId, ProductDto dto) {
-        Product product = repository.findById(productId)
+    public ProductDto update(Long productId, ProductDto dto) {
+        Product product = (Product) repository.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException(" Product Not Found"));
         mapper.updateToEntity(dto,product);
         Product result = repository.save(product);
@@ -143,12 +143,7 @@ public class ProductServices {
         );
     }
 
-    // Add this custom exception class
-    public static class InvalidCategoryException extends RuntimeException {
-        public InvalidCategoryException(String message) {
-            super(message);
-        }
-    }
+
 
     }
 

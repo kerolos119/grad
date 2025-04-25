@@ -5,14 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.model.Auditable;
 import org.example.model.Gender;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public  class UsersDto extends Auditable {
+public  class UsersDto  {
     @NotBlank(message = "Name required")
     private String username;
     @NotBlank(message = "Email required")
@@ -25,7 +24,7 @@ public  class UsersDto extends Auditable {
     @NotBlank
     @Size(min = 8)
     private String password;
-    private String role;
+
 
 
 

@@ -33,8 +33,7 @@ public class CustomUserDetailsServices implements UserDetailsService {
             }
             return userRepository.existsUserWithCredentials(
                     tokenInfo.getEmail(),
-                    userId,
-                    tokenInfo.getRoles()
+                    userId
             );
         } catch (NumberFormatException e) {
             return false;
@@ -63,15 +62,13 @@ public class CustomUserDetailsServices implements UserDetailsService {
         }
 
         // تحويل الأدوار إلى GrantedAuthority
-        Collection<GrantedAuthority> authorities = users.getRoles().stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toSet());
+
 
         // بناء وإرجاع كائن UserDetails
         return User.builder()
                 .username(users.getEmail())
                 .password(users.getPassword())
-                .authorities(authorities)
                 .build();
     }
+
 }

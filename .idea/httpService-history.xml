@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="HttpHistory">
+    <option name="httpHistories">
+      <map>
+        <entry key="0">
+          <value>
+            <ReqHistory>
+              <option name="body" value="{&#10;  &quot;username&quot;: &quot;koko bptros&quot;,&#10;  &quot;email&quot;: &quot;kokobotros99@gmail.com&quot;,&#10;  &quot;phoneNumber&quot;: &quot;01550602932&quot;,&#10;  &quot;gender&quot;: &quot;MALE&quot;,&#10;  &quot;password&quot;: &quot;Koko992002@&quot;,&#10;  &quot;role&quot;: &quot;ADMIN&quot;,&#10;  &quot;modifiedAt&quot;: &quot;2025-04-25 19:47:02&quot;,&#10;  &quot;modifiedBy&quot;: &quot;&quot;,&#10;  &quot;createdAt&quot;: &quot;2025-04-25 19:47:02&quot;,&#10;  &quot;createdBy&quot;: &quot;&quot;&#10;}" />
+              <option name="contentType" value="application/json" />
+              <option name="fileNames">
+                <array />
+              </option>
+              <option name="headers">
+                <map>
+                  <entry key="Content-Type" value="application/json" />
+                </map>
+              </option>
+              <option name="host" value="http://127.0.0.1:8080" />
+              <option name="id" value="0" />
+              <option name="method" value="POST" />
+              <option name="params">
+                <map />
+              </option>
+              <option name="res" value="Error request, response status: 403" />
+              <option name="time" value="2025-04-25 19:49:24" />
+              <option name="uri" value="/api/v1/users/register" />
+            </ReqHistory>
+          </value>
+        </entry>
+        <entry key="1">
+          <value>
+            <ReqHistory>
+              <option name="body" value="{&#10;  &quot;username&quot;: &quot;koko bptros&quot;,&#10;  &quot;email&quot;: &quot;kokobotros99@gmail.com&quot;,&#10;  &quot;phoneNumber&quot;: &quot;01550602932&quot;,&#10;  &quot;gender&quot;: &quot;MALE&quot;,&#10;  &quot;password&quot;: &quot;Koko992002@&quot;,&#10;  &quot;role&quot;: &quot;ADMIN&quot;,&#10;  &quot;modifiedAt&quot;: &quot;2025-04-25 19:47:02&quot;,&#10;  &quot;modifiedBy&quot;: &quot;&quot;,&#10;  &quot;createdAt&quot;: &quot;2025-04-25 19:47:02&quot;,&#10;  &quot;createdBy&quot;: &quot;&quot;&#10;}" />
+              <option name="contentType" value="application/json" />
+              <option name="fileNames">
+                <array />
+              </option>
+              <option name="headers">
+                <map>
+                  <entry key="Content-Type" value="application/json" />
+                </map>
+              </option>
+              <option name="host" value="http://localhost:8080/api/v1/users/register" />
+              <option name="id" value="1" />
+              <option name="method" value="POST" />
+              <option name="params">
+                <map />
+              </option>
+              <option name="res" value="Error request, response status: 403" />
+              <option name="time" value="2025-04-25 20:10:30" />
+              <option name="uri" value="" />
+            </ReqHistory>
+          </value>
+        </entry>
+        <entry key="2">
+          <value>
+            <ReqHistory>
+              <option name="body" value="{&#10;  &quot;username&quot;: &quot;koko bptros&quot;,&#10;  &quot;email&quot;: &quot;kokobotros99@gmail.com&quot;,&#10;  &quot;phoneNumber&quot;: &quot;01550602932&quot;,&#10;  &quot;gender&quot;: &quot;MALE&quot;,&#10;  &quot;password&quot;: &quot;Koko992002@&quot;&#10;}" />
+              <option name="contentType" value="application/json" />
+              <option name="fileNames">
+                <array />
+              </option>
+              <option name="headers">
+                <map>
+                  <entry key="Content-Type" value="application/json" />
+                </map>
+              </option>
+              <option name="host" value="http://localhost:8080/api/v1/users/register" />
+              <option name="id" value="2" />
+              <option name="method" value="POST" />
+              <option name="params">
+                <map />
+              </option>
+              <option name="res" value="Error request, response status: 403" />
+              <option name="time" value="2025-04-25 20:24:33" />
+              <option name="uri" value="" />
+            </ReqHistory>
+          </value>
+        </entry>
+        <entry key="3">
+          <value>
+            <ReqHistory>
+              <option name="body" value="{&#10;  &quot;username&quot;: &quot;koko bptros&quot;,&#10;  &quot;email&quot;: &quot;kokobotros99@gmail.com&quot;,&#10;  &quot;phoneNumber&quot;: &quot;01550602932&quot;,&#10;  &quot;gender&quot;: &quot;MALE&quot;,&#10;  &quot;password&quot;: &quot;Koko992002@&quot;&#10;}" />
+              <option name="contentType" value="application/json" />
+              <option name="fileNames">
+                <array />
+              </option>
+              <option name="headers">
+                <map>
+                  <entry key="Content-Type" value="application/json" />
+                </map>
+              </option>
+              <option name="host" value="http://localhost:8080/api/v1/users/register" />
+              <option name="id" value="3" />
+              <option name="method" value="POST" />
+              <option name="params">
+                <map />
+              </option>
+              <option name="res" value="Error request, response status: 403" />
+              <option name="time" value="2025-04-25 20:24:34" />
+              <option name="uri" value="" />
+            </ReqHistory>
+          </value>
+        </entry>
+        <entry key="4">
+          <value>
+            <ReqHistory>
+              <option name="body" value="{&#10;  &quot;username&quot;: &quot;koko bptros&quot;,&#10;  &quot;email&quot;: &quot;kokobotros99@gmail.com&quot;,&#10;  &quot;phoneNumber&quot;: &quot;01550602932&quot;,&#10;  &quot;gender&quot;: &quot;MALE&quot;,&#10;  &quot;password&quot;: &quot;Koko992002@&quot;&#10;}" />
+              <option name="contentType" value="application/json" />
+              <option name="fileNames">
+                <array />
+              </option>
+              <option name="headers">
+                <map>
+                  <entry key="Content-Type" value="application/json" />
+                </map>
+              </option>
+              <option name="host" value="http://localhost:8080/api/v1/users/register" />
+              <option name="id" value="4" />
+              <option name="method" value="POST" />
+              <option name="params">
+                <map />
+              </option>
+              <option name="res" value="Error request, response status: 403" />
+              <option name="time" value="2025-04-25 20:24:35" />
+              <option name="uri" value="" />
+            </ReqHistory>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

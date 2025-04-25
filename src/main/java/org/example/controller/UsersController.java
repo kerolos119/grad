@@ -39,14 +39,12 @@ public class UsersController {
 
     @DeleteMapping("/{userId}")
     @Operation(summary = "delete user",security = @SecurityRequirement(name = "bearerAuth"))
-    @PreAuthorize("hasRole('ADMIN') or (#userId == principal.id)")
     public void delete(@PathVariable Long userId) {
         usersServices.delete(userId);
     }
 
     @PutMapping("/{userId}")
     @Operation(summary = "update user",security = @SecurityRequirement(name = "bearerAuth"))
-    @PreAuthorize("hasRole('ADMIN') or #id == principal.id")
     public ApiResponse<UsersDto>  update (
             @PathVariable Long userId ,
             @Valid @RequestBody UsersDto dto){

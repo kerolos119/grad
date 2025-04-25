@@ -23,7 +23,6 @@ public class PlantsController {
 //    @Autowired
 //    PlantsServices services;
     @PostMapping("/plant")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlantDto> create(@RequestBody PlantDto plantDto){
         return new ResponseEntity<>(plantsServices.create(plantDto), HttpStatus.CREATED);
     }
@@ -35,14 +34,12 @@ public class PlantsController {
     }
 
     @PutMapping("/{plantId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PlantDto> update(@PathVariable Long plantId , @RequestBody PlantDto plantDto){
        PlantDto update= plantsServices.update(plantId,plantDto);
         return ResponseEntity.ok(update);
     }
 
     @DeleteMapping("/{plantId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete (@PathVariable Long plantId){
         plantsServices.delete(plantId);
         return ResponseEntity.noContent().build();

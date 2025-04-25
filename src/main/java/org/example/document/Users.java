@@ -3,7 +3,7 @@ package org.example.document;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
-import org.example.model.Auditable;
+
 import org.example.model.Gender;
 import org.springframework.security.core.userdetails.User;
 
@@ -16,7 +16,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public  class Users  extends Auditable {
+public  class Users   {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -47,11 +47,6 @@ public  class Users  extends Auditable {
     private Gender gender;
 
 
-    @Column(columnDefinition = "role")
-    @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> roles = new HashSet<>();
-    // + getter & setter
-    public Set<String> getRoles() { return roles; }
 
 
 

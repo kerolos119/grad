@@ -35,7 +35,7 @@ public class JwtUtils {
         Map<String , Object> claims = new HashMap<>();
         claims.put("userId",admin.getUserId());
         claims.put("email",admin.getEmail());
-        claims.put("role",admin.getRoles());
+
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -76,9 +76,6 @@ public class JwtUtils {
         return TokenInfo.builder()
                 .email(claims.get("email",String.class))
                 .userId(claims.get("userId",String.class))
-                .roles(claims.get("role",String.class))
-                .IssuedAt(claims.getIssuedAt())
-                .ExpiredAt(claims.getExpiration())
                 .build();
     }
 

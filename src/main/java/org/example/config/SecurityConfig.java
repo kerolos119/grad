@@ -1,9 +1,11 @@
 package org.example.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.services.CustomUserDetailsServices;
 import org.example.services.JwtFilterServices;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -64,7 +66,10 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:8080")); // أضف جميع الأصول المطلوبة
         config.setAllowCredentials(true); // مهم إذا كان العميل يرسل cookies
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+//        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        config.setExposedHeaders(Arrays.asList("Authorization"));
+
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -78,17 +83,25 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // تمكين CORS
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/v1/users/login").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Allow preflight requests
+                        .requestMatchers( "/test").permitAll() // Allow preflight requests
+
                         .anyRequest().authenticated()
-
-
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(filterServices, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(filterServices, UsernamePasswordAuthenticationFilter.class).exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            System.err.println("something went wrong");
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\",\"message\":\"" +
+                                    authException.getMessage() + "\"}");
+                        })
+                );
         return http.build();
     }
 }

@@ -43,6 +43,11 @@ public class GlobalExceptionHandler {
         return exceptionHandler(ex,HttpStatus.BAD_REQUEST,HttpStatus.BAD_REQUEST.value(), ex.getMessage());
     }
 
+    @ExceptionHandler(UserException.class)
+    public ResponseEntity<ExceptionResponse> invalidArgumentHandler(UserException ex){
+        return exceptionHandler(ex,HttpStatus.UNAUTHORIZED,HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+    }
+
     private ResponseEntity<ExceptionResponse> exceptionHandler(Exception ex, HttpStatus status,int code,String message){
         String messsage;
         try{

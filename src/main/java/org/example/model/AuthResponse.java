@@ -12,21 +12,23 @@ public class AuthResponse {
     private String accessToken;
     private String refreshToken;
     private Instant expiredAt;
-    private Users users;
+    private UsersDto users;
 
-    public AuthResponse(  String accessToken,
-     String refreshToken,
-     Instant expiredAt,
-     Users users) {
-        this.accessToken=accessToken;
-        this.refreshToken=refreshToken;
-        this.expiredAt=expiredAt;
-        this.users=users;
+//    public AuthResponse(  String accessToken,
+//     String refreshToken,
+//     Instant expiredAt,
+//     Users users) {
+//        this.accessToken=accessToken;
+//        this.refreshToken=refreshToken;
+//        this.expiredAt=expiredAt;
+//        this.users=users;
+//    }
+
+    public AuthResponse(String token, UsersDto dto) {
+        this.accessToken = token;
+        this.users = dto;
     }
 
-    public AuthResponse(Object o, UsersDto dto) {
-    }
-
-    public AuthResponse AuthResponse(Object o, UsersDto dto) {return new AuthResponse(o,dto);
-    }
+//    public AuthResponse AuthResponse(Object o, UsersDto dto) {return new AuthResponse(o,dto);
+//    }
 }

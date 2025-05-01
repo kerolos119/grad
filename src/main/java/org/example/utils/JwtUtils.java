@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.MalformedKeyException;
 import org.example.document.Users;
+import org.example.exception.UserException;
 import org.example.model.TokenInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -26,47 +27,48 @@ public class JwtUtils {
     private Long expirationMs;
 
 
-
-    private SecretKey getSigningKey(){
+    private SecretKey getSigningKey() {
         byte[] decodedKey = Base64.getDecoder().decode(basse64Secret);
         return Keys.hmacShaKeyFor(decodedKey);
     }
-    public String generate(Users admin){
-        Map<String , Object> claims = new HashMap<>();
-        claims.put("userId",admin.getUserId());
-        claims.put("email",admin.getEmail());
 
+    public String generate(Users admin) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("userId", admin.getUserId());
+        claims.put("email", admin.getEmail());
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()+expirationMs))
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
+        try {
+            return Jwts.builder()
+                    .setClaims(claims)
+                    .setIssuedAt(new Date())
+                    .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
+                    .signWith(getSigningKey(), SignatureAlgorithm.HS512)
+                    .compact();
+        } catch (Exception ex) {
+            System.err.println("failed to generate token");
+            System.err.println(ex.getMessage());
+            throw new UserException("failed to generate token");
+        }
 
     }
 
-    public Boolean isValid(String token){
+    public Boolean isValid(String token) {
         try {
             Jwts.parser()
                     .setSigningKey(getSigningKey())
                     .build()
                     .parseClaimsJws(token);
             return true;
-        }
-        catch (SecurityException | MalformedKeyException e){
-        }
-        catch (ExpiredJwtException e){
-        }
-        catch (UnsupportedJwtException e){
-        }
-        catch (IllegalArgumentException e){
+        } catch (SecurityException | MalformedKeyException e) {
+        } catch (ExpiredJwtException e) {
+        } catch (UnsupportedJwtException e) {
+        } catch (IllegalArgumentException e) {
         }
         return false;
     }
 
 
-    public  TokenInfo extractInfo(String token) throws JwtException {
+    public TokenInfo extractInfo(String token) throws JwtException {
         Claims claims = Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -74,8 +76,8 @@ public class JwtUtils {
                 .getBody();
 
         return TokenInfo.builder()
-                .email(claims.get("email",String.class))
-                .userId(claims.get("userId",String.class))
+                .email(claims.get("email", String.class))
+                .userId(claims.get("userId", String.class))
                 .build();
     }
 

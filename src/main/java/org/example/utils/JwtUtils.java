@@ -77,7 +77,7 @@ public class JwtUtils {
 
         return TokenInfo.builder()
                 .email(claims.get("email", String.class))
-                .userId(claims.get("userId", String.class))
+                .userId(claims.get("userId", Long.class))
                 .build();
     }
 

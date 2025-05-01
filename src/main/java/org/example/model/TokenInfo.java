@@ -13,7 +13,7 @@ import java.util.Date;
 @Builder
 public class TokenInfo {
     private String email;
-    private String userId;
+    private Long userId;
     private String roles;
     private java.util.Date ExpiredAt;
     private Date IssuedAt;

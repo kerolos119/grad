@@ -27,7 +27,7 @@ public class CustomUserDetailsServices implements UserDetailsService {
      */
     public Boolean isValid(TokenInfo tokenInfo) {
         try {
-            Long userId = Long.parseLong(tokenInfo.getUserId());
+            Long userId = tokenInfo.getUserId();
             if (!isValidEmail(tokenInfo.getEmail())) {
                 return false;
             }

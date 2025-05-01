@@ -43,15 +43,92 @@ CREATE TABLE Diseases (
     FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE -- ربط الأمراض بالمستخدم
 );
 
--- إنشاء جدول مفتاح الوعي (KeyAwareness)
 CREATE TABLE KeyAwareness (
     key_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف المفتاح
     interesting_story TEXT, -- القصة الشيقة
     care_guide ENUM('Water', 'Fertilizer') NOT NULL, -- دليل العناية (ماء أو سماد)
     plant_description TEXT -- وصف عام للنبات
-);
+);-- Create the database
+  CREATE DATABASE EyesOnPlants;
 
--- إنشاء جدول التذكيرات
+  -- Select the database
+  USE EyesOnPlants;
+
+  -- Create Users table first (as other tables depend on it)
+  CREATE TABLE Users (
+      user_id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(50) NOT NULL,
+      email VARCHAR(50) UNIQUE NOT NULL,
+      password VARCHAR(50) NOT NULL,
+      phone_number VARCHAR(15),
+      gender ENUM('Male', 'Female') NOT NULL
+  );
+
+  -- Create Plants table with foreign key reference
+  CREATE TABLE Plants (
+      plant_id INT AUTO_INCREMENT PRIMARY KEY,
+      plant_name VARCHAR(50) NOT NULL,
+      type VARCHAR(50),
+      plant_stage ENUM('Seed', 'Leaf', 'Flower', 'Fruit') NOT NULL,
+      growth_time INT,
+      optimal_conditions TEXT,
+      common_diseases TEXT,
+      user_id INT,
+      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+  );
+
+  -- Create Diseases table with foreign key reference
+  CREATE TABLE Diseases (
+      disease_id INT AUTO_INCREMENT PRIMARY KEY,
+      disease_name VARCHAR(50) NOT NULL,
+      affected_parts TEXT,
+      recommended_action TEXT,
+      symptoms TEXT,
+      treatment TEXT,
+      user_id INT,
+      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+  );
+
+  -- Create KeyAwareness table
+  CREATE TABLE KeyAwareness (
+      key_id INT AUTO_INCREMENT PRIMARY KEY,
+      interesting_story TEXT,
+      care_guide ENUM('Water', 'Fertilizer') NOT NULL,
+      plant_description TEXT
+  );
+
+  -- Create Reminders table with foreign key references
+  CREATE TABLE Reminders (
+      reminder_id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT,
+      plant_id INT,
+      reminder_type ENUM('Watering', 'Fertilizing') NOT NULL,
+      next_reminder_date DATE,
+      frequency INT,
+      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+      FOREIGN KEY (plant_id) REFERENCES Plants(plant_id) ON DELETE CASCADE
+  );
+
+  -- Create Products table with foreign key reference
+  CREATE TABLE Products (
+      product_id INT AUTO_INCREMENT PRIMARY KEY,
+      product_name VARCHAR(50) NOT NULL,
+      category ENUM('Fertilizer', 'Dried Fruits', 'Fruits', 'Gardening Tools') NOT NULL,
+      price DECIMAL(10, 2) NOT NULL,
+      seller_address TEXT NOT NULL,
+      seller_phone VARCHAR(15) NOT NULL,
+      user_id INT,
+      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
+  );
+
+  -- Example queries to verify tables
+  -- SELECT * FROM Users;
+  -- SELECT * FROM Plants;
+  -- SELECT * FROM Diseases;
+  -- SELECT * FROM KeyAwareness;
+  -- SELECT * FROM Reminders;
+  -- SELECT * FROM Products;
+
 CREATE TABLE Reminders (
     reminder_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف التذكير
     user_id INT, -- معرف المستخدم

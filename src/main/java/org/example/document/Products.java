@@ -6,7 +6,6 @@ import lombok.*;
 import org.example.model.ProductCategory;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Entity
 @Table(name = "Products")

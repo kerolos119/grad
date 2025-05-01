@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import org.example.model.RemiderType;
-import org.example.model.ReminderStatus;
-
 
 import java.time.LocalDate;
 

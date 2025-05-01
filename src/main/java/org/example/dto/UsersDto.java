@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.model.Gender;
+import org.example.model.Role;
 
 @Data
 @NoArgsConstructor
@@ -24,6 +25,7 @@ public  class UsersDto  {
     @NotBlank
     @Size(min = 8)
     private String password;
+    private Role role;
 
 
 

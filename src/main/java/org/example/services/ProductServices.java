@@ -7,13 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.example.document.Products;
 import org.example.dto.PageResult;
 import org.example.dto.ProductDto;
-import org.example.exception.InvalidCategoryException;
-import org.example.exception.ProductNotFoundException;
 import org.example.mapper.ProductMapper;
 import org.example.model.ProductCategory;
-import org.example.repo.PlantRepository;
 import org.example.repo.ProductRepository;
-import org.example.repo.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,14 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.example.exception.NotFoundException;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ProductServices {
     private final ProductMapper mapper;
     private final ProductRepository repository;
-    private final PlantRepository plantRepository;
-    private final UserRepository userRepository;
 
 
     public ProductDto create(ProductDto dto) {
@@ -41,13 +37,13 @@ public class ProductServices {
 
     public void delete(Long productId) {
         Products product = (Products) repository.findById(productId)
-                .orElseThrow(()-> new ProductNotFoundException(" Product Not Found "));
+                .orElseThrow(()-> new NotFoundException(" Product Not Found "));
         repository.delete(product);
     }
 
     public ProductDto update(Long productId, ProductDto dto) {
         Products product = (Products) repository.findById(productId)
-                .orElseThrow(()-> new ProductNotFoundException(" Product Not Found"));
+                .orElseThrow(()-> new NotFoundException(" Product Not Found"));
         mapper.updateToEntity(dto,product);
         Products result = repository.save(product);
         return mapper.toDto(result);
@@ -61,7 +57,7 @@ public class ProductServices {
 
         return repository.findByProductName(productName.trim())
                 .map(mapper::toDto)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found with name: " + productName));
+                .orElseThrow(() -> new NotFoundException("Product not found with name: " + productName));
     }
 
     // Fixed findByCategory method
@@ -109,7 +105,7 @@ public class ProductServices {
                     ProductCategory categoryEnum = ProductCategory.valueOf(category.toUpperCase());
                     predicates.add(cb.equal(root.get("category"), categoryEnum));
                 } catch (IllegalArgumentException e) {
-                    throw new InvalidCategoryException("Invalid category filter: " + category);
+                    throw new NotFoundException("Invalid category filter: " + category);
                 }
             }
 

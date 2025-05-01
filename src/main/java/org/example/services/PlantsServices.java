@@ -6,11 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.document.Plants;
 import org.example.dto.PageResult;
 import org.example.dto.PlantDto;
-import org.example.exception.PlantNotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.mapper.PlantMapper;
 import org.example.model.PlantStage;
 import org.example.repo.PlantRepository;
-import org.example.repo.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,7 +26,6 @@ import java.util.stream.Collectors;
 public class PlantsServices {
     private final PlantRepository plantRepository;
     private final PlantMapper plantMapper;
-    private final UserRepository userRepository;
 
     public PlantDto create(PlantDto plantDto) {
         Plants plants = plantMapper.toEntity(plantDto);
@@ -42,7 +40,7 @@ public class PlantsServices {
 
     public PlantDto update(Long plantId, PlantDto plantDto) {
         Plants existingPlant = plantRepository.findById(Math.toIntExact(plantId))
-                .orElseThrow(()-> new PlantNotFoundException(" Plant not found"));
+                .orElseThrow(()-> new NotFoundException(" Plant not found"));
 
         plantMapper.updateToEntity(plantDto,existingPlant);
         Plants updatePlant = plantRepository.save(existingPlant);
@@ -60,12 +58,12 @@ public class PlantsServices {
 
         return Optional.ofNullable(plantRepository.findByPlantName(plantName.trim()))
                 .map(plantMapper::toDto)
-                .orElseThrow(()->new PlantNotFoundException("Plant not found with name" + plantName));
+                .orElseThrow(()->new NotFoundException("Plant not found with name" + plantName));
     }
     public PlantDto getPlantById(Long plantId) {
         return plantRepository.findById(Math.toIntExact(plantId))
                 .map(plantMapper::toDto)
-                .orElseThrow(() -> new PlantNotFoundException("Plant not found"));
+                .orElseThrow(() -> new NotFoundException("Plant not found"));
     }
 
     public PlantDto findByType(String type) {
@@ -74,7 +72,7 @@ public class PlantsServices {
         }
         return Optional.ofNullable(plantRepository.findByType(type.trim()))
                 .map(plantMapper::toDto)
-                .orElseThrow(()->new PlantNotFoundException("Plant not found with type"+type));
+                .orElseThrow(()->new NotFoundException("Plant not found with type"+type));
     }
 
     public PlantDto findByPlantStage(String plantStage) {
@@ -83,7 +81,7 @@ public class PlantsServices {
         }
         return Optional.ofNullable(plantRepository.findByPlantStage(PlantStage.valueOf(plantStage.trim())))
                 .map(plantMapper::toDto)
-                .orElseThrow(()->new PlantNotFoundException("Plant not found with stage"+plantStage));
+                .orElseThrow(()->new NotFoundException("Plant not found with stage"+plantStage));
     }
 
 

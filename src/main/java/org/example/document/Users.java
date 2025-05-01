@@ -5,9 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import org.example.model.Gender;
-import org.springframework.security.core.userdetails.User;
-
-import java.util.*;
+import org.example.model.Role;
 
 
 @Entity
@@ -45,6 +43,11 @@ public  class Users   {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "ENUM('MALE', 'FEMALE')") // تحديد نوع الحقل يدويًا
     private Gender gender;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", columnDefinition = "VARCHAR(20) DEFAULT 'USER'")
+    @Builder.Default
+    private Role role = Role.USER;
 
 
 

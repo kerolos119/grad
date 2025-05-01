@@ -3,10 +3,8 @@ package org.example.document;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-import org.example.document.Users;
 import org.example.model.PlantStage;
 
 @Entity

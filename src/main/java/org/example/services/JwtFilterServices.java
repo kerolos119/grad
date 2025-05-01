@@ -1,6 +1,5 @@
 package org.example.services;
 
-import jakarta.persistence.Column;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,54 +35,65 @@ public class JwtFilterServices extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain)
             throws ServletException, IOException {
+
+        // Skip filter completely for login endpoint
+        if (request.getServletPath().contains("/api/v1/users/login")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
             final String authorization = request.getHeader("Authorization");
-            if (authorization != null && authorization.startsWith("Bearer")){
-                String token = authorization.substring(7);
-                if (!jwtUtils.isValid(token)){
-                    throw new CustomException("Invalid token" , HttpStatus.UNAUTHORIZED);
-                }
 
-                TokenInfo tokenInfo = jwtUtils.extractInfo(token);
-
-                if (!userDetailsServices.isValid(tokenInfo)){
-                    throw new CustomException("Invalid token" , HttpStatus.UNAUTHORIZED);
-                }
-
-                List<GrantedAuthority> authorities =
-                        Collections.singletonList(new SimpleGrantedAuthority(tokenInfo.getRoles()));
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(tokenInfo.getEmail(), null,authorities);
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            // If no authorization header or not Bearer token, continue the chain
+            if (authorization == null || !authorization.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
             }
 
-            filterChain.doFilter(request,response);
+            // Process token
+            String token = authorization.substring(7);
+            if (!jwtUtils.isValid(token)){
+                throw new CustomException("Invalid token", HttpStatus.UNAUTHORIZED);
+            }
 
+            TokenInfo tokenInfo = jwtUtils.extractInfo(token);
+
+            if (!userDetailsServices.isValid(tokenInfo)){
+                throw new CustomException("Invalid token", HttpStatus.UNAUTHORIZED);
+            }
+
+            List<GrantedAuthority> authorities =
+                    Collections.singletonList(new SimpleGrantedAuthority(tokenInfo.getRoles()));
+            UsernamePasswordAuthenticationToken authenticationToken =
+                    new UsernamePasswordAuthenticationToken(tokenInfo.getEmail(), null, authorities);
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
+            // Continue the filter chain
+            filterChain.doFilter(request, response);
         }
         catch (CustomException ex) {
-            System.err.println("Custom Exception Caught:" +ex.getMessage());
-
+            // Don't continue the filter chain in exception cases
+            SecurityContextHolder.clearContext();
             response.setStatus(ex.getStatus().value());
             response.setContentType("application/json");
-            response.setHeader("ERROR_CODE",ex.getMessage());
-            response.getWriter().write(ex.getMessage());
+            response.getWriter().write("{\"error\":\"" + ex.getMessage() + "\"}");
         }
         catch (RuntimeException ex){
-            System.err.println("runTime exception caught:" +ex.getMessage());
+            // Don't continue the filter chain in exception cases
+            SecurityContextHolder.clearContext();
 
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.setContentType("application/json");
-            response.setHeader("ERROR_CODE",ex.getMessage());
-            response.getWriter().write(ex.getMessage());
+            response.getWriter().write("{\"error\":\"" + ex.getMessage() + "\"}");
         }
         catch (Exception ex){
-            System.err.println("Unexpected exception caught:" + ex.getMessage());
+            // Don't continue the filter chain in exception cases
+            SecurityContextHolder.clearContext();
 
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.setContentType("application/json");
-            response.setHeader("ERROR_CODE",ex.getMessage());
-            response.getWriter().write("{\"error\":\"Internal server error\",\"message\":\""+ex.getMessage()+"\"}");
+            response.getWriter().write("{\"error\":\"Internal server error\",\"message\":\"" + ex.getMessage() + "\"}");
         }
-
     }
 }

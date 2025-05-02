@@ -15,6 +15,6 @@ public class TokenInfo {
     private String email;
     private Long userId;
     private String roles;
-    private java.util.Date ExpiredAt;
+    private Date ExpiredAt;
     private Date IssuedAt;
 }

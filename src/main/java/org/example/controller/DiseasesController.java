@@ -1,13 +1,10 @@
 package org.example.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.DiseaseDto;
 import org.example.dto.PageResult;
 import org.example.dto.PageUtils;
-import org.example.dto.UsersDto;
 import org.example.model.ApiResponse;
 import org.example.services.DiseasesServices;
 import org.springframework.data.domain.Page;
@@ -15,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;

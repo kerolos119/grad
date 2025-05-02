@@ -6,11 +6,10 @@ import org.example.document.Plants;
 import org.example.document.Reminders;
 import org.example.dto.PageResult;
 import org.example.dto.ReminderDto;
-import org.example.exception.ReminderNotFoundException;
+import org.example.exception.NotFoundException;
 import org.example.mapper.ReminderMapper;
 import org.example.repo.PlantRepository;
 import org.example.repo.ReminderRepository;
-import org.example.repo.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,17 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class ReminderServices {
-    private  final ReminderRepository repository;
+    private final ReminderRepository repository;
     private final ReminderMapper mapper;
     private final PlantRepository plantRepository;
-    private final UserRepository userRepository;
 
     public ReminderDto create(ReminderDto dto) {
         Reminders reminder = mapper.toEntity(dto);
@@ -39,12 +36,12 @@ public class ReminderServices {
 
     public void delete(Integer reminderId) {
         Reminders reminder = repository.findById(reminderId)
-                .orElseThrow(()-> new ReminderNotFoundException("Reminder not found"));
+                .orElseThrow(()-> new NotFoundException("Reminder not found"));
         repository.delete(reminder);
     }
 
     public ReminderDto update(Integer reminderId, ReminderDto dto) {
-        Reminders reminder = repository.findById(reminderId).orElseThrow(()->new ReminderNotFoundException("Reminder not found"));
+        Reminders reminder = repository.findById(reminderId).orElseThrow(()->new NotFoundException("Reminder not found"));
         mapper.updateToEntity(dto,reminder);
 
         Reminders updateReminder = repository.save(reminder);
@@ -63,7 +60,7 @@ public class ReminderServices {
         // 2. Find Reminder by Plant entity
         return repository.findByPlant(plant)
                 .map(mapper::toDto)
-                .orElseThrow(() -> new ReminderNotFoundException("Reminder not found for plant: " + plantId));
+                .orElseThrow(() -> new NotFoundException("Reminder not found for plant: " + plantId));
     }
 
     public PageResult<ReminderDto> search(String plant, String reminderType, Pageable pageable) {

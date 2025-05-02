@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.security.access.AccessDeniedException;
 
 import java.time.LocalDateTime;
 import java.util.Locale;
@@ -47,15 +48,32 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> invalidArgumentHandler(UserException ex){
         return exceptionHandler(ex,HttpStatus.UNAUTHORIZED,HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
     }
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ExceptionResponse> notFoundExceptionHandler (NotFoundException ex){
+        return exceptionHandler(ex,HttpStatus.NOT_FOUND,HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> accessDeniedExceptionHandler(AccessDeniedException ex){
+        return exceptionHandler(ex,HttpStatus.FORBIDDEN,HttpStatus.FORBIDDEN.value(), ex.getMessage());
+    }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionResponse> globalExceptionHandler(Exception ex){
+        return exceptionHandler(ex,HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+    }
+    @ExceptionHandler(DiseaseException.class)
+    public ResponseEntity<ExceptionResponse> diseaseExceptionHandler(DiseaseException ex){
+        return exceptionHandler(ex,HttpStatus.BAD_REQUEST,HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    }
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<ExceptionResponse> diseaseExceptionHandler(DuplicateEmailException ex){
+        return exceptionHandler(ex,HttpStatus.CREATED,HttpStatus.CREATED.value(), ex.getMessage());
+    }
     private ResponseEntity<ExceptionResponse> exceptionHandler(Exception ex, HttpStatus status,int code,String message){
-        String messsage;
         try{
-            messsage=message;
             //messsage=messageSource.getMessage(message,null,Locale.ENGLISH);
         }catch (Exception exception){
             System.err.println("couldn't find the message in resources");
-            messsage=message;
         }
         return  new ResponseEntity<ExceptionResponse>(
                 new ExceptionResponse(message,status ,code,LocalDateTime.now()).getStatus());

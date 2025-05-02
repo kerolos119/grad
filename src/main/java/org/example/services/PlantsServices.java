@@ -3,6 +3,7 @@ package org.example.services;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.document.Plants;
 import org.example.dto.PageResult;
 import org.example.dto.PlantDto;
@@ -17,91 +18,196 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class PlantsServices {
     private final PlantRepository plantRepository;
     private final PlantMapper plantMapper;
 
+    /**
+     * Create a new plant
+     */
     public PlantDto create(PlantDto plantDto) {
-        Plants plants = plantMapper.toEntity(plantDto);
-        Plants plant = plantRepository.save(plants);
+        log.info("Creating new plant: {}", plantDto.getPlantName());
+        if (plantDto.getPlantName() == null || plantDto.getPlantName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Plant name cannot be null or empty");
+        }
+        
+        Plants plant = plantMapper.toEntity(plantDto);
+        Plants savedPlant = plantRepository.save(plant);
+        log.info("Plant created with ID: {}", savedPlant.getPlantId());
+        return plantMapper.toDto(savedPlant);
+    }
+
+    /**
+     * Get all plants for a specific user
+     */
+    public List<PlantDto> getAllPlantsByUser(Long userId) {
+        log.info("Fetching all plants for user ID: {}", userId);
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        
+        List<Plants> plants = plantRepository.findByUser_UserId(userId);
+        if (plants.isEmpty()) {
+            log.info("No plants found for user ID: {}", userId);
+        } else {
+            log.info("Found {} plants for user ID: {}", plants.size(), userId);
+        }
+        
+        return plants.stream()
+                .map(plantMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Update an existing plant
+     */
+    public PlantDto update(Long plantId, PlantDto plantDto) {
+        log.info("Updating plant with ID: {}", plantId);
+        if (plantId == null) {
+            throw new IllegalArgumentException("Plant ID cannot be null");
+        }
+        
+        Plants existingPlant = plantRepository.findById(Math.toIntExact(plantId))
+                .orElseThrow(() -> new NotFoundException("Plant not found with ID: " + plantId));
+
+        // Validate plant name if provided
+        if (plantDto.getPlantName() != null && plantDto.getPlantName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Plant name cannot be empty");
+        }
+        
+        plantMapper.updateToEntity(plantDto, existingPlant);
+        Plants updatedPlant = plantRepository.save(existingPlant);
+        log.info("Plant updated successfully: {}", plantId);
+        return plantMapper.toDto(updatedPlant);
+    }
+
+    /**
+     * Delete a plant by ID
+     */
+    public void delete(Long plantId) {
+        log.info("Deleting plant with ID: {}", plantId);
+        if (plantId == null) {
+            throw new IllegalArgumentException("Plant ID cannot be null");
+        }
+        
+        // Check if plant exists before deleting
+        if (!plantRepository.existsById(Math.toIntExact(plantId))) {
+            throw new NotFoundException("Plant not found with ID: " + plantId);
+        }
+        
+        plantRepository.deleteById(Math.toIntExact(plantId));
+        log.info("Plant deleted successfully: {}", plantId);
+    }
+
+    /**
+     * Find plant by name
+     */
+    public PlantDto findByPlantName(String plantName) {
+        log.info("Finding plant by name: {}", plantName);
+        if (plantName == null || plantName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Plant name cannot be null or empty");
+        }
+
+        Plants plant = plantRepository.findByPlantName(plantName.trim());
+        if (plant == null) {
+            throw new NotFoundException("Plant not found with name: " + plantName);
+        }
+        
         return plantMapper.toDto(plant);
     }
 
-    public List<PlantDto> getAllPlantsByUser(Long userId) {
-        return plantRepository.findByUser_UserId(userId)
-                .stream().map(plantMapper::toDto).collect(Collectors.toList());
-    }
-
-    public PlantDto update(Long plantId, PlantDto plantDto) {
-        Plants existingPlant = plantRepository.findById(Math.toIntExact(plantId))
-                .orElseThrow(()-> new NotFoundException(" Plant not found"));
-
-        plantMapper.updateToEntity(plantDto,existingPlant);
-        Plants updatePlant = plantRepository.save(existingPlant);
-        return plantMapper.toDto(updatePlant);
-    }
-
-    public void delete(Long plantId) {
-        plantRepository.deleteById(Math.toIntExact(plantId));
-    }
-
-    public PlantDto findByPlantName(String plantName) {
-        if (plantName==null ||plantName.trim().isEmpty()){
-            throw new IllegalArgumentException("Name cannot  be null or empty");
-        }
-
-        return Optional.ofNullable(plantRepository.findByPlantName(plantName.trim()))
-                .map(plantMapper::toDto)
-                .orElseThrow(()->new NotFoundException("Plant not found with name" + plantName));
-    }
+    /**
+     * Get plant by ID
+     */
     public PlantDto getPlantById(Long plantId) {
-        return plantRepository.findById(Math.toIntExact(plantId))
-                .map(plantMapper::toDto)
-                .orElseThrow(() -> new NotFoundException("Plant not found"));
-    }
-
-    public PlantDto findByType(String type) {
-        if (type==null || type.trim().isEmpty()){
-            throw new IllegalArgumentException("Type os plant cannot be null or empty");
+        log.info("Getting plant by ID: {}", plantId);
+        if (plantId == null) {
+            throw new IllegalArgumentException("Plant ID cannot be null");
         }
-        return Optional.ofNullable(plantRepository.findByType(type.trim()))
-                .map(plantMapper::toDto)
-                .orElseThrow(()->new NotFoundException("Plant not found with type"+type));
+        
+        Plants plant = plantRepository.findById(Math.toIntExact(plantId))
+                .orElseThrow(() -> new NotFoundException("Plant not found with ID: " + plantId));
+                
+        return plantMapper.toDto(plant);
     }
 
+    /**
+     * Find plant by type
+     */
+    public PlantDto findByType(String type) {
+        log.info("Finding plant by type: {}", type);
+        if (type == null || type.trim().isEmpty()) {
+            throw new IllegalArgumentException("Plant type cannot be null or empty");
+        }
+        
+        Plants plant = plantRepository.findByType(type.trim());
+        if (plant == null) {
+            throw new NotFoundException("Plant not found with type: " + type);
+        }
+        
+        return plantMapper.toDto(plant);
+    }
+
+    /**
+     * Find plant by growth stage
+     */
     public PlantDto findByPlantStage(String plantStage) {
-        if (plantStage==null || plantStage.trim().isEmpty()){
+        log.info("Finding plant by stage: {}", plantStage);
+        if (plantStage == null || plantStage.trim().isEmpty()) {
             throw new IllegalArgumentException("Plant stage cannot be null or empty");
         }
-        return Optional.ofNullable(plantRepository.findByPlantStage(PlantStage.valueOf(plantStage.trim())))
-                .map(plantMapper::toDto)
-                .orElseThrow(()->new NotFoundException("Plant not found with stage"+plantStage));
+        
+        try {
+            PlantStage stage = PlantStage.valueOf(plantStage.trim().toUpperCase());
+            Plants plant = plantRepository.findByPlantStage(stage);
+            
+            if (plant == null) {
+                throw new NotFoundException("Plant not found with stage: " + plantStage);
+            }
+            
+            return plantMapper.toDto(plant);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid plant stage: " + plantStage);
+        }
     }
 
-
+    /**
+     * Search plants with filters
+     */
     public PageResult<PlantDto> search(String plantName, String type, String userId, Pageable pageable) {
-        Specification<Plants> spec = (root, query, cb) ->{
-            List<Predicate> predicates  = new ArrayList<>();
-            if (plantName != null){
-                predicates.add(cb.like(root.get("plantName"),"%"+plantName+"%"));
+        log.info("Searching plants with filters - name: {}, type: {}, userId: {}", plantName, type, userId);
+        
+        Specification<Plants> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            
+            if (plantName != null && !plantName.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("plantName")), "%" + plantName.toLowerCase() + "%"));
             }
-            if (type!=null){
-                predicates.add(cb.like(root.get("type"),"%"+type+"%"));
+            
+            if (type != null && !type.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("type")), "%" + type.toLowerCase() + "%"));
             }
-            if (userId!=null){
-                predicates.add(cb.like(root.get("userId"),"%"+userId+"%"));
+            
+            if (userId != null && !userId.isEmpty()) {
+                predicates.add(cb.equal(root.get("user").get("userId"), Long.valueOf(userId)));
             }
-            return cb.and(predicates.toArray(new Predicate[0]));
+            
+            return predicates.isEmpty() ? null : cb.and(predicates.toArray(new Predicate[0]));
         };
-        Page<Plants> plantsPage=plantRepository.findAll(spec,pageable);
-        List<PlantDto> plantDtos=plantsPage.getContent().stream().map(plantMapper::toDto).collect(Collectors.toList());
+        
+        Page<Plants> plantsPage = plantRepository.findAll(spec, pageable);
+        List<PlantDto> plantDtos = plantsPage.getContent().stream()
+                .map(plantMapper::toDto)
+                .collect(Collectors.toList());
 
+        log.info("Search returned {} results", plantDtos.size());
+        
         return PageResult.<PlantDto>builder()
                 .items(plantDtos)
                 .totalElement(plantsPage.getTotalElements())

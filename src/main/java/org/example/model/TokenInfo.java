@@ -15,6 +15,9 @@ public class TokenInfo {
     private String email;
     private Long userId;
     private String roles;
-    private Date ExpiredAt;
-    private Date IssuedAt;
+    private String firstName;
+    private String lastName;
+    private String tokenType;
+    private Date expiredAt;
+    private Date issuedAt;
 }

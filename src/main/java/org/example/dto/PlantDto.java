@@ -1,36 +1,32 @@
 package org.example.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.document.Users;
-import org.example.model.PlantStage;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PlantDto {
+    private Integer id;
 
-    @NotBlank(message = "Plant name required")
+    @NotBlank(message = "Plant name is required")
+    @Size(max = 100, message = "Plant name cannot exceed 100 characters")
     private String plantName;
 
+    @Size(max = 100, message = "Scientific name cannot exceed 100 characters")
+    private String scientificName;
+
+    @Size(max = 50, message = "Plant type cannot exceed 50 characters")
     private String type;
-    @NotBlank(message = "Growth stage required")
-    private PlantStage plantStage;
 
-    @Positive(message = "The time required for growth must be a positive number")
-    private Integer growthTime;
+    private String description;
 
-    private String optimalConditions;
-
-    private String commonDiseases;
-
-    @NotNull(message = "User ID required")
-    private Users user;
-
+    private Long userId;
+    
+    private String userName;
 }

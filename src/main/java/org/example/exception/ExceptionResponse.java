@@ -3,7 +3,6 @@ package org.example.exception;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
 
@@ -11,10 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class ExceptionResponse {
-    private String messsage;
-    private HttpStatus status;
+    private LocalDateTime timestamp;
     private int code;
-    private LocalDateTime time;
-
-
+    private String message;
+    private String details;
 }

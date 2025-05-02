@@ -18,7 +18,7 @@ public class UserMapper extends AbstractMapper<UsersDto,Users>{
     public Users updateToEntity(UsersDto dto, Users entity) {
         entity.setUsername(dto.getUsername());
         entity.setEmail(dto.getEmail());
-        entity.setPhonenumber(dto.getPhoneNumber());
+        entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setPassword(dto.getPassword());
         return entity;
     }

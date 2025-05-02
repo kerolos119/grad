@@ -1,81 +1,122 @@
 package org.example.exception;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
+import jakarta.validation.ConstraintViolationException;
+import org.example.model.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.security.access.AccessDeniedException;
 
-import java.time.LocalDateTime;
-import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
-    @Autowired
-    MessageSource messageSource;
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ExceptionResponse> customExceptionHandler(CustomException ex, Locale locale){
-        String message;
-        try {
-            message = messageSource.getMessage(ex.getMessage(), null, Locale.ENGLISH);
-        }
-        catch (Exception exception){
-            message = ex.getMessage();
-        }
-        return new ResponseEntity<ExceptionResponse>(
-                new ExceptionResponse(message,ex.getStatus(),ex.getStatus().value(), LocalDateTime.now()),ex.getStatus());
+    public ResponseEntity<ApiResponse<Object>> handleCustomException(CustomException ex) {
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(ApiResponse.error(ex.getStatus(), ex.getMessage()));
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionResponse> runtimeExceptionHandler(RuntimeException ex){
-        return exceptionHandler(ex, HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+    public ResponseEntity<ApiResponse<Object>> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.serverError("An unexpected error occurred: " + ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ExceptionResponse> invalidArgumentHandler(MethodArgumentNotValidException ex){
-        return exceptionHandler(ex,HttpStatus.BAD_REQUEST,HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Object>> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest("Validation failed", errors));
     }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Object>> handleConstraintViolation(
+            ConstraintViolationException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getConstraintViolations().forEach(violation -> {
+            String propertyPath = violation.getPropertyPath().toString();
+            String message = violation.getMessage();
+            errors.put(propertyPath, message);
+        });
+        
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest("Validation error", errors));
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ExceptionResponse> invalidArgumentHandler(IllegalArgumentException ex){
-        return exceptionHandler(ex,HttpStatus.BAD_REQUEST,HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Object>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest(ex.getMessage()));
     }
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ExceptionResponse> invalidArgumentHandler(UserException ex){
-        return exceptionHandler(ex,HttpStatus.UNAUTHORIZED,HttpStatus.UNAUTHORIZED.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Object>> handleUserException(UserException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest(ex.getMessage()));
     }
+
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ExceptionResponse> notFoundExceptionHandler (NotFoundException ex){
-        return exceptionHandler(ex,HttpStatus.NOT_FOUND,HttpStatus.NOT_FOUND.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ApiResponse<Object>> handleNotFoundException(NotFoundException ex) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.notFound(ex.getMessage()));
     }
+
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ExceptionResponse> accessDeniedExceptionHandler(AccessDeniedException ex){
-        return exceptionHandler(ex,HttpStatus.FORBIDDEN,HttpStatus.FORBIDDEN.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ResponseEntity<ApiResponse<Object>> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.forbidden("Access denied: You don't have permission to access this resource"));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ExceptionResponse> globalExceptionHandler(Exception ex){
-        return exceptionHandler(ex,HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ApiResponse<Object>> handleGlobalException(Exception ex, WebRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.serverError("An unexpected error occurred: " + ex.getMessage()));
     }
+
     @ExceptionHandler(DiseaseException.class)
-    public ResponseEntity<ExceptionResponse> diseaseExceptionHandler(DiseaseException ex){
-        return exceptionHandler(ex,HttpStatus.BAD_REQUEST,HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Object>> handleDiseaseException(DiseaseException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest(ex.getMessage()));
     }
+
     @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ExceptionResponse> diseaseExceptionHandler(DuplicateEmailException ex){
-        return exceptionHandler(ex,HttpStatus.CREATED,HttpStatus.CREATED.value(), ex.getMessage());
-    }
-    private ResponseEntity<ExceptionResponse> exceptionHandler(Exception ex, HttpStatus status,int code,String message){
-        try{
-            //messsage=messageSource.getMessage(message,null,Locale.ENGLISH);
-        }catch (Exception exception){
-            System.err.println("couldn't find the message in resources");
-        }
-        return  new ResponseEntity<ExceptionResponse>(
-                new ExceptionResponse(message,status ,code,LocalDateTime.now()).getStatus());
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ApiResponse<Object>> handleDuplicateEmailException(DuplicateEmailException ex) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.badRequest(ex.getMessage()));
     }
 }

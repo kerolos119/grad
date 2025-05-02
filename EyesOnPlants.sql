@@ -1,170 +1,158 @@
-create database EyesOnPlants;
+-- Create the database
+CREATE DATABASE plant_store;
 
-use EyesOnPlants;
-alter table users modify column gender enum ('FEMALE','MALE') not null
-drop TABLE users;
-SHOW COLUMNS FROM users LIKE 'gender';
-ALTER TABLE users 
-MODIFY COLUMN gender ENUM('MALE', 'FEMALE') NOT NULL;
-drop database EyesOnPlants;
-show tables
--- إنشاء جدول المستخدمين
-CREATE TABLE Users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف المستخدم
-    name VARCHAR(50) NOT NULL, -- اسم المستخدم
-    email VARCHAR(50) UNIQUE NOT NULL, -- البريد الإلكتروني
-    password VARCHAR(50) NOT NULL, -- كلمة المرور
-    phone_number VARCHAR(15), -- رقم الهاتف
-    gender ENUM('Male', 'Female') NOT NULL -- الجنس
+-- Select the database
+USE plant_store;
+
+-- Create Users table
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    phone_number VARCHAR(20),
+    address TEXT,
+    role ENUM('USER', 'SELLER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- إنشاء جدول النباتات مع إضافة عمود user_id
-CREATE TABLE Plants (
-    plant_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف النبات
-    plant_name VARCHAR(50) NOT NULL, -- اسم النبات
-    type VARCHAR(50), -- نوع النبات
-    plant_stage ENUM('Seed', 'Leaf', 'Flower', 'Fruit') NOT NULL, -- مرحلة نمو النبات
-    growth_time INT, -- الوقت اللازم للنمو بالأيام
-    optimal_conditions TEXT, -- الظروف المثالية
-    common_diseases TEXT, -- الأمراض الشائعة
-    user_id INT, -- معرف المستخدم الذي يمتلك هذا النبات
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE -- ربط النباتات بالمستخدم
+-- Create Plants table
+CREATE TABLE plants (
+    plant_id INT AUTO_INCREMENT PRIMARY KEY,
+    plant_name VARCHAR(100) NOT NULL,
+    scientific_name VARCHAR(100),
+    type VARCHAR(50),
+    description TEXT,
+    user_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 );
 
--- إنشاء جدول الأمراض
-CREATE TABLE Diseases (
-    disease_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف المرض
-    disease_name VARCHAR(50) NOT NULL, -- اسم المرض
-    affected_parts TEXT, -- الأجزاء المتأثرة
-    recommended_action TEXT, -- الإجراءات الموصى بها
-    symptoms TEXT, -- الأعراض
-    treatment TEXT, -- العلاج
-    user_id INT, -- معرف المستخدم الذي قام بالتشخيص أو الذي يتعامل مع المرض
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE -- ربط الأمراض بالمستخدم
+-- Create Products table with enhanced fields for plant e-commerce
+CREATE TABLE products (
+    product_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_name VARCHAR(100) NOT NULL,
+    category ENUM('LIVE_PLANTS', 'DRIED_PLANTS', 'SEEDS', 'PLANTERS', 'GARDENING_TOOLS', 
+                 'PLANT_CARE', 'FERTILIZERS', 'INDOOR_PLANTS', 'OUTDOOR_PLANTS', 
+                 'EXOTIC_PLANTS', 'SUCCULENTS', 'HERBS') NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    description TEXT,
+    stock_quantity INT NOT NULL DEFAULT 0,
+    is_on_sale BOOLEAN DEFAULT FALSE,
+    discount_price DECIMAL(10, 2),
+    care_instructions TEXT,
+    watering_frequency VARCHAR(100),
+    sunlight_requirements VARCHAR(100),
+    plant_height VARCHAR(50),
+    plant_type VARCHAR(50),
+    is_indoor BOOLEAN,
+    seller_address VARCHAR(255) NOT NULL,
+    seller_phone VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
-CREATE TABLE KeyAwareness (
-    key_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف المفتاح
-    interesting_story TEXT, -- القصة الشيقة
-    care_guide ENUM('Water', 'Fertilizer') NOT NULL, -- دليل العناية (ماء أو سماد)
-    plant_description TEXT -- وصف عام للنبات
-);-- Create the database
-  CREATE DATABASE EyesOnPlants;
-
-  -- Select the database
-  USE EyesOnPlants;
-
-  -- Create Users table first (as other tables depend on it)
-  CREATE TABLE Users (
-      user_id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(50) NOT NULL,
-      email VARCHAR(50) UNIQUE NOT NULL,
-      password VARCHAR(50) NOT NULL,
-      phone_number VARCHAR(15),
-      gender ENUM('Male', 'Female') NOT NULL
-  );
-
-  -- Create Plants table with foreign key reference
-  CREATE TABLE Plants (
-      plant_id INT AUTO_INCREMENT PRIMARY KEY,
-      plant_name VARCHAR(50) NOT NULL,
-      type VARCHAR(50),
-      plant_stage ENUM('Seed', 'Leaf', 'Flower', 'Fruit') NOT NULL,
-      growth_time INT,
-      optimal_conditions TEXT,
-      common_diseases TEXT,
-      user_id INT,
-      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-  );
-
-  -- Create Diseases table with foreign key reference
-  CREATE TABLE Diseases (
-      disease_id INT AUTO_INCREMENT PRIMARY KEY,
-      disease_name VARCHAR(50) NOT NULL,
-      affected_parts TEXT,
-      recommended_action TEXT,
-      symptoms TEXT,
-      treatment TEXT,
-      user_id INT,
-      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-  );
-
-  -- Create KeyAwareness table
-  CREATE TABLE KeyAwareness (
-      key_id INT AUTO_INCREMENT PRIMARY KEY,
-      interesting_story TEXT,
-      care_guide ENUM('Water', 'Fertilizer') NOT NULL,
-      plant_description TEXT
-  );
-
-  -- Create Reminders table with foreign key references
-  CREATE TABLE Reminders (
-      reminder_id INT AUTO_INCREMENT PRIMARY KEY,
-      user_id INT,
-      plant_id INT,
-      reminder_type ENUM('Watering', 'Fertilizing') NOT NULL,
-      next_reminder_date DATE,
-      frequency INT,
-      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-      FOREIGN KEY (plant_id) REFERENCES Plants(plant_id) ON DELETE CASCADE
-  );
-
-  -- Create Products table with foreign key reference
-  CREATE TABLE Products (
-      product_id INT AUTO_INCREMENT PRIMARY KEY,
-      product_name VARCHAR(50) NOT NULL,
-      category ENUM('Fertilizer', 'Dried Fruits', 'Fruits', 'Gardening Tools') NOT NULL,
-      price DECIMAL(10, 2) NOT NULL,
-      seller_address TEXT NOT NULL,
-      seller_phone VARCHAR(15) NOT NULL,
-      user_id INT,
-      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-  );
-
-  -- Example queries to verify tables
-  -- SELECT * FROM Users;
-  -- SELECT * FROM Plants;
-  -- SELECT * FROM Diseases;
-  -- SELECT * FROM KeyAwareness;
-  -- SELECT * FROM Reminders;
-  -- SELECT * FROM Products;
-
-CREATE TABLE Reminders (
-    reminder_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف التذكير
-    user_id INT, -- معرف المستخدم
-    plant_id INT, -- معرف النبات
-    reminder_type ENUM('Watering', 'Fertilizing') NOT NULL, -- نوع التذكير (ري أو سماد)
-    next_reminder_date DATE, -- تاريخ التذكير التالي
-    frequency INT, -- عدد الأيام بين التذكيرات
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE, -- الربط مع جدول المستخدمين
-    FOREIGN KEY (plant_id) REFERENCES Plants(plant_id) ON DELETE CASCADE -- الربط مع جدول النباتات
+-- Create Product Images table (for the ElementCollection in Products entity)
+CREATE TABLE product_images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    image_url VARCHAR(255) NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
 );
 
--- إنشاء جدول المنتجات
-CREATE TABLE Products (
-    product_id INT AUTO_INCREMENT PRIMARY KEY, -- معرف المنتج
-    product_name VARCHAR(50) NOT NULL, -- اسم المنتج
-    category ENUM('Fertilizer', 'Dried Fruits', 'Fruits', 'Gardening Tools') NOT NULL, -- الفئة
-    price DECIMAL(10, 2) NOT NULL, -- السعر
-    seller_address TEXT NOT NULL, -- عنوان البائع
-    seller_phone VARCHAR(15) NOT NULL, -- رقم هاتف البائع
-    user_id INT, -- معرف المستخدم (البائع)
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE -- الربط بجدول المستخدمين
+-- Create Reminders table
+CREATE TABLE reminders (
+    reminder_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    plant_id INT NOT NULL,
+    reminder_type ENUM('WATERING', 'FERTILIZING', 'REPOTTING', 'PRUNING', 'PEST_CHECK') NOT NULL,
+    next_reminder_date DATE,
+    frequency INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (plant_id) REFERENCES plants(plant_id) ON DELETE CASCADE
 );
--- عرض بيانات جدول المستخدمين
-SELECT * FROM Users;
 
--- عرض بيانات جدول النباتات
-SELECT * FROM Plants;
+-- Create Orders table for e-commerce functionality
+CREATE TABLE orders (
+    order_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    total_amount DECIMAL(10, 2) NOT NULL,
+    shipping_address TEXT NOT NULL,
+    billing_address TEXT,
+    status ENUM('PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED') DEFAULT 'PENDING',
+    payment_method VARCHAR(50),
+    payment_status ENUM('PENDING', 'PAID', 'FAILED', 'REFUNDED') DEFAULT 'PENDING',
+    tracking_number VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
--- عرض بيانات جدول الأمراض
-SELECT * FROM Diseases;
+-- Create Order Items table for e-commerce functionality
+CREATE TABLE order_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL,
+    price_per_unit DECIMAL(10, 2) NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+);
 
--- عرض بيانات جدول مفتاح الوعي
-SELECT * FROM KeyAwareness;
+-- Create Reviews table for product reviews
+CREATE TABLE reviews (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    user_id INT NOT NULL,
+    rating INT NOT NULL CHECK(rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
--- عرض بيانات جدول التذكيرات
-SELECT * FROM Reminders;
+-- Create Cart table for shopping cart functionality
+CREATE TABLE cart (
+    cart_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
--- عرض بيانات جدول المنتجات
-SELECT * FROM Products;
+-- Create Cart Items table
+CREATE TABLE cart_items (
+    item_id INT AUTO_INCREMENT PRIMARY KEY,
+    cart_id INT NOT NULL,
+    product_id INT NOT NULL,
+    quantity INT NOT NULL DEFAULT 1,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (cart_id) REFERENCES cart(cart_id) ON DELETE CASCADE,
+    FOREIGN KEY (product_id) REFERENCES products(product_id) ON DELETE CASCADE
+);
+
+-- Index for common queries
+CREATE INDEX idx_products_category ON products(category);
+CREATE INDEX idx_products_price ON products(price);
+CREATE INDEX idx_products_is_on_sale ON products(is_on_sale);
+CREATE INDEX idx_products_is_indoor ON products(is_indoor);
+CREATE INDEX idx_products_stock ON products(stock_quantity);
+CREATE INDEX idx_reminders_next_date ON reminders(next_reminder_date);
+CREATE INDEX idx_orders_user ON orders(user_id);
+CREATE INDEX idx_orders_status ON orders(status);
+
+-- Example queries
+-- SELECT * FROM products WHERE category = 'INDOOR_PLANTS' AND is_on_sale = TRUE;
+-- SELECT * FROM products WHERE price BETWEEN 10 AND 50 ORDER BY price;
+-- SELECT * FROM reminders WHERE user_id = 1 AND next_reminder_date <= CURRENT_DATE;
+-- SELECT p.*, AVG(r.rating) as avg_rating FROM products p LEFT JOIN reviews r ON p.product_id = r.product_id GROUP BY p.product_id;

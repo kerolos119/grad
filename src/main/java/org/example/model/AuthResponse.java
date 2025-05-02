@@ -28,6 +28,12 @@ public class AuthResponse {
         this.accessToken = token;
         this.users = dto;
     }
+    
+    public AuthResponse(String accessToken, String refreshToken, UsersDto dto) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+        this.users = dto;
+    }
 
 //    public AuthResponse AuthResponse(Object o, UsersDto dto) {return new AuthResponse(o,dto);
 //    }

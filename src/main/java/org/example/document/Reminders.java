@@ -2,16 +2,18 @@ package org.example.document;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
-import org.example.model.RemiderType;
+import org.example.model.ReminderType;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Reminders")
+@Table(name = "reminders")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -23,33 +25,45 @@ public class Reminders {
     @Column(name = "reminder_id")
     private Integer reminderId;
 
-    @ManyToOne//(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id",referencedColumnName = "user_id",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @NotEmpty
+    @NotNull(message = "User is required")
     private Users user;
 
-    @ManyToOne
-    @JoinColumn(name = "plant_id",referencedColumnName = "plant_id",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "plant_id", referencedColumnName = "plant_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @NotEmpty
+    @NotNull(message = "Plant is required")
     private Plants plant;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "reminder_type",nullable = false)
-    @NotBlank(message = "Reminder type required")
-    private RemiderType remiderType;
+    @Column(name = "reminder_type", nullable = false)
+    @NotNull(message = "Reminder type is required")
+    private ReminderType reminderType;
 
     @Column(name = "next_reminder_date")
-    @FutureOrPresent(message = "The reminder date must be in the present or future.")
+    @FutureOrPresent(message = "The reminder date must be in the present or future")
     private LocalDate nextReminderDate;
 
     @Column(name = "frequency")
-    @Positive(message = "Frequency must be a positive number")
+    @Positive(message = "Frequency must be positive")
     private Integer frequency;
+    
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
+    // Method to return the ID (for compatibility with services)
+    public Integer getId() {
+        return reminderId;
+    }
 
     //@Enumerated(EnumType.STRING)
     //@Column(name = "status")

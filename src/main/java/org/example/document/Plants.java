@@ -2,13 +2,15 @@ package org.example.document;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.example.model.PlantStage;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Plants")
+@Table(name = "plants")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,35 +19,39 @@ public class Plants {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "plant_id")
-    private Long plantId;
+    private Integer plantId;
 
-    @Column(name = "plant_name", nullable = false, length = 50)
-    @NotBlank(message = "Plant name required")
+    @Column(name = "plant_name", nullable = false, length = 100)
+    @NotBlank(message = "Plant name is required")
+    @Size(max = 100, message = "Plant name cannot exceed 100 characters")
     private String plantName;
 
+    @Column(name = "scientific_name", length = 100)
+    @Size(max = 100, message = "Scientific name cannot exceed 100 characters")
+    private String scientificName;
+
     @Column(name = "type", length = 50)
+    @Size(max = 50, message = "Plant type cannot exceed 50 characters")
     private String type;
 
-    @Enumerated(EnumType.STRING) // Store ENUM as a string in the database
-    @Column(name = "plant_stage", nullable = false)
-    @NotBlank(message = "Growth stage required")
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "plant_stage")
     private PlantStage plantStage;
 
-    @Column(name = "growth_time")
-    @Positive(message = "The time required for growth must be a positive number")
-    private Integer growthTime;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Users user;
 
-    @Column(name = "optimal_conditions", columnDefinition = "TEXT")
-    @NotEmpty
-    private String optimalConditions;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "common_diseases", columnDefinition = "TEXT")
-    @NotEmpty
-    private String commonDiseases;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id",referencedColumnName = "user_id",nullable = false)
-    private Users user; // Relationship with the Users table
-
-
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 }

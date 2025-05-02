@@ -1,12 +1,12 @@
 package org.example.services;
 
-
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.document.Users;
 import org.example.dto.Credentials;
 import org.example.dto.UsersDto;
+import org.example.exception.NotFoundException;
 import org.example.exception.UserException;
 import org.example.mapper.UserMapper;
 import org.example.model.AuthResponse;
@@ -19,10 +19,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -30,95 +28,175 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
 
-
+    /**
+     * Create a new user
+     */
     public UsersDto create(UsersDto dto) {
-        if (userRepository.existsByEmail(dto.getEmail())){
+        // Validate unique constraints
+        if (userRepository.existsByEmail(dto.getEmail())) {
             throw new UserException("Email is already registered");
         }
-        if (userRepository.existsByUsername(dto.getUsername())){
-            throw new UserException("UserName is already taken");
+        if (userRepository.existsByUsername(dto.getUsername())) {
+            throw new UserException("Username is already taken");
         }
 
-        var user = UserMapper.INSTANCE.toEntity(dto);
+        // Map DTO to entity and encode password
+        Users user = UserMapper.INSTANCE.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        
+        // Save and return DTO
         return UserMapper.INSTANCE.toDto(userRepository.save(user));
     }
 
+    /**
+     * Find user by ID
+     */
+    public UsersDto findById(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("User ID cannot be null");
+        }
+        
+        return userRepository.findById(userId)
+                .map(UserMapper.INSTANCE::toDto)
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+    }
+
+    /**
+     * Delete a user by ID
+     */
     public void delete(Long userId) {
-        if (!userRepository.existsById(userId)){
-            throw new UserException("User not found");
+        if (!userRepository.existsById(userId)) {
+            throw new NotFoundException("User not found with ID: " + userId);
         }
         userRepository.deleteById(userId);
     }
 
+    /**
+     * Update user information
+     */
     public UsersDto update(Long userId, @Valid UsersDto dto) {
-        var user = userRepository.findById(userId)
-                .orElseThrow(()->new UserException("User not found"));
-        if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())){
-            if (userRepository.existsByEmail(dto.getEmail())){
+        // Find user
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with ID: " + userId));
+        
+        // Update email if provided and not already in use
+        if (dto.getEmail() != null && !dto.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(dto.getEmail())) {
                 throw new UserException("Email already registered");
             }
             user.setEmail(dto.getEmail());
         }
-        if (dto.getPassword() != null){
+        
+        // Update username if provided and not already in use
+        if (dto.getUsername() != null && !dto.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(dto.getUsername())) {
+                throw new UserException("Username already taken");
+            }
+            user.setUsername(dto.getUsername());
+        }
+        
+        // Update password if provided
+        if (dto.getPassword() != null) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
+        
+        // Update other fields if provided
+        if (dto.getPhoneNumber() != null) {
+            user.setPhoneNumber(dto.getPhoneNumber());
+        }
+        
+        if (dto.getRole() != null) {
+            user.setRole(dto.getRole());
+        }
+        
+        // Save and return updated DTO
         return UserMapper.INSTANCE.toDto(userRepository.save(user));
     }
 
-    public Page<UsersDto> search(String username, String email, String phone, Pageable pageable) {
+    /**
+     * Search users with filters
+     */
+    public Page<UsersDto> search(String username, String email, String phoneNumber, Pageable pageable) {
         Specification<Users> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
-            if (username != null) {
-                predicates.add(cb.like(root.get("username"), "%" + username + "%"));
+            
+            if (username != null && !username.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("username")), "%" + username.toLowerCase() + "%"));
             }
-            if (email != null) {
-                predicates.add(cb.equal(root.get("email"), email));
+            
+            if (email != null && !email.isEmpty()) {
+                predicates.add(cb.like(cb.lower(root.get("email")), "%" + email.toLowerCase() + "%"));
             }
-            if (phone != null){
-                predicates.add(cb.like(root.get("phone"), "%" + phone + "%"));
+            
+            if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                predicates.add(cb.like(root.get("phoneNumber"), "%" + phoneNumber + "%"));
             }
-            return cb.and(predicates.toArray(new Predicate[0]));
+            
+            return predicates.isEmpty() ? null : cb.and(predicates.toArray(new Predicate[0]));
         };
+        
         return userRepository.findAll(spec, pageable).map(UserMapper.INSTANCE::toDto);
     }
 
+    /**
+     * Authenticate user and generate token
+     */
     public AuthResponse authenticate(@Valid Credentials request) {
-        var user = userRepository.findByEmail(request.getEmail());
-        if (!userRepository.existsByEmail(request.getEmail())){
-            throw new UserException("Invalid creditials");
+        // Validate credentials
+        if (request.getEmail() == null || request.getEmail().isEmpty()) {
+            throw new UserException("Email is required");
         }
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())){
-            throw new UserException("Invalid creditials");
+        
+        // Find user by email
+        Users user = userRepository.findByEmail(request.getEmail());
+        if (user == null) {
+            throw new UserException("Invalid credentials");
         }
-        return new AuthResponse(
-                jwtUtils.generate(user), // يجب أن تُرجع String
-                userMapper.toDto(user) // استبدال INSTANCE بـ instance عادي إن لزم
-        );
+        
+        // Verify password
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new UserException("Invalid credentials");
+        }
+        
+        // Generate token and create response
+        String token = jwtUtils.generateAccessToken(user);
+        return new AuthResponse(token, UserMapper.INSTANCE.toDto(user));
     }
 
+    /**
+     * Find user by username
+     */
     public UsersDto findByName(String username) {
-        if ((username == null || username.isEmpty())){
-            throw new IllegalArgumentException("name cannot be null or empty");
+        if (username == null || username.isEmpty()) {
+            throw new IllegalArgumentException("Username cannot be null or empty");
         }
-        return Optional.ofNullable(userRepository.findByUsername(username.trim()))
-                .map(userMapper::toDto)
-                .orElseThrow(()->new UserException("user not found with name:" + username));
+        
+        Users user = userRepository.findByUsername(username.trim());
+        if (user == null) {
+            throw new NotFoundException("User not found with username: " + username);
+        }
+        
+        return UserMapper.INSTANCE.toDto(user);
     }
 
+    /**
+     * Find user by email
+     */
     public UsersDto findByEmail(String email) {
-        if ((email == null || email.isEmpty())){
-        throw new IllegalArgumentException("email cannot be null or empty");
+        if (email == null || email.isEmpty()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        
+        Users user = userRepository.findByEmail(email.trim());
+        if (user == null) {
+            throw new NotFoundException("User not found with email: " + email);
+        }
+        
+        return UserMapper.INSTANCE.toDto(user);
     }
-        return Optional.ofNullable(userRepository.findByEmail(email.trim()))
-                .map(userMapper::toDto)
-                .orElseThrow(()->new UserException("user not found with email:" + email));
-    }
-
 
 //    public void resetPassword(ResetPasswordRequest request) {
 //        var user = userRepository.findByEmail(request.getEmail())

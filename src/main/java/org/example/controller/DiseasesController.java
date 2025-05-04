@@ -35,9 +35,9 @@ public class DiseasesController {
     @GetMapping("/search")
     public ApiResponse<PageResult<DiseaseDto>> search(
             @RequestParam(required = false) String dName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "name,asc") String[] sort) {
+            @RequestParam(required = false,defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "10") int size,
+            @RequestParam(required = false,defaultValue = "name,asc") String[] sort) {
 
         Sort sorting = Sort.by(parseSortOrders(sort));
         Pageable pageable = PageRequest.of(page,size,sorting);

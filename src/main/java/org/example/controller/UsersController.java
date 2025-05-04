@@ -85,13 +85,13 @@ public class UsersController {
             @RequestParam(required = false) String phoneNumber,
             
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false,defaultValue = "10") int size,
             
             @Parameter(description = "Sort properties in format: property,direction") 
-            @RequestParam(defaultValue = "userId,desc") String[] sort) {
+            @RequestParam(required = false,defaultValue = "userId,desc") String[] sort) {
         
         Sort sorting = Sort.by(parseSortOrder(sort));
         PageRequest pageable = PageRequest.of(page, size, sorting);

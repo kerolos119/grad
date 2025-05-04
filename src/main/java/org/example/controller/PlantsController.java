@@ -121,16 +121,16 @@ public class PlantsController {
             @RequestParam(required = false) String userId,
             
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false,defaultValue = "10") int size,
             
             @Parameter(description = "Sort by field") 
-            @RequestParam(defaultValue = "plantName") String sortBy,
+            @RequestParam(required = false,defaultValue = "plantName") String sortBy,
             
             @Parameter(description = "Sort direction") 
-            @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
+            @RequestParam(required = false,defaultValue = "ASC") Sort.Direction direction) {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         PageResult<PlantDto> result = plantService.search(plantName, type, userId, pageable);

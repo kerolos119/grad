@@ -116,16 +116,16 @@ public class ReminderController {
             @RequestParam(required = false) String reminderType,
             
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false,defaultValue = "10") int size,
             
             @Parameter(description = "Sort by field") 
-            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(required = false,defaultValue = "id") String sortBy,
             
             @Parameter(description = "Sort direction") 
-            @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
+            @RequestParam(required = false,defaultValue = "ASC") Sort.Direction direction) {
         
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         PageResult<ReminderDto> result = reminderService.search(plant, reminderType, pageable);

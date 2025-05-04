@@ -148,9 +148,9 @@ public class ProductController {
     )
     public ResponseEntity<ApiResponse<List<ProductDto>>> findProductsOnSale(
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(required = false, defaultValue = "10") int size) {
         log.info("Finding products on sale");
         Pageable pageable = PageRequest.of(page, size);
         List<ProductDto> products = productService.findOnSaleProducts(pageable);
@@ -167,9 +167,9 @@ public class ProductController {
             @Parameter(description = "Indoor status (true=indoor, false=outdoor)") 
             @RequestParam Boolean isIndoor,
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(required = false, defaultValue = "10") int size) {
         log.info("Finding products by indoor status: {}", isIndoor);
         Pageable pageable = PageRequest.of(page, size);
         List<ProductDto> products = productService.findByIndoorStatus(isIndoor, pageable);
@@ -188,9 +188,9 @@ public class ProductController {
             @Parameter(description = "Maximum price") 
             @RequestParam BigDecimal maxPrice,
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(required = false,defaultValue = "10") int size) {
         log.info("Finding products in price range: {} to {}", minPrice, maxPrice);
         Pageable pageable = PageRequest.of(page, size);
         List<ProductDto> products = productService.findByPriceRange(minPrice, maxPrice, pageable);
@@ -207,9 +207,9 @@ public class ProductController {
             @Parameter(description = "Search keyword") 
             @RequestParam String keyword,
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(required = false,defaultValue = "10") int size) {
         log.info("Searching products with keyword: {}", keyword);
         Pageable pageable = PageRequest.of(page, size);
         List<ProductDto> products = productService.searchByKeyword(keyword, pageable);
@@ -224,9 +224,9 @@ public class ProductController {
     )
     public ResponseEntity<ApiResponse<List<ProductDto>>> findInStockProducts(
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(required = false,defaultValue = "10") int size) {
         log.info("Finding in-stock products");
         Pageable pageable = PageRequest.of(page, size);
         List<ProductDto> products = productService.findInStockProducts(pageable);
@@ -256,16 +256,16 @@ public class ProductController {
             @RequestParam(required = false) String sellerPhone,
             
             @Parameter(description = "Page number (0-based)") 
-            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(required = false,defaultValue = "0") int page,
             
             @Parameter(description = "Page size") 
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false,defaultValue = "10") int size,
             
             @Parameter(description = "Sort by field") 
-            @RequestParam(defaultValue = "productName") String sortBy,
+            @RequestParam(required = false,defaultValue = "productName") String sortBy,
             
             @Parameter(description = "Sort direction") 
-            @RequestParam(defaultValue = "ASC") Sort.Direction direction) {
+            @RequestParam(required = false,defaultValue = "ASC") Sort.Direction direction) {
         
         log.info("Searching products with filters");
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));

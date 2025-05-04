@@ -1,8 +1,8 @@
 -- Create the database
-CREATE DATABASE plant_store;
+CREATE DATABASE EyesOnPlants;
 
 -- Select the database
-USE plant_store;
+USE EyesOnPlants;
 
 -- Create Users table
 CREATE TABLE users (
@@ -26,6 +26,7 @@ CREATE TABLE plants (
     scientific_name VARCHAR(100),
     type VARCHAR(50),
     description TEXT,
+    plant_stage ENUM('SEED', 'LEAF', 'FLOWERS', 'FRUITS'),
     user_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -52,10 +53,11 @@ CREATE TABLE products (
     is_indoor BOOLEAN,
     seller_address VARCHAR(255) NOT NULL,
     seller_phone VARCHAR(20) NOT NULL,
-    user_id INT NOT NULL,
+    seller_id INT NOT NULL,
+    seller_name VARCHAR(100),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+    FOREIGN KEY (seller_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
 -- Create Product Images table (for the ElementCollection in Products entity)
@@ -142,6 +144,7 @@ CREATE TABLE cart_items (
 );
 
 -- Index for common queries
+CREATE INDEX idx_plants_stage ON plants(plant_stage);
 CREATE INDEX idx_products_category ON products(category);
 CREATE INDEX idx_products_price ON products(price);
 CREATE INDEX idx_products_is_on_sale ON products(is_on_sale);
@@ -156,3 +159,9 @@ CREATE INDEX idx_orders_status ON orders(status);
 -- SELECT * FROM products WHERE price BETWEEN 10 AND 50 ORDER BY price;
 -- SELECT * FROM reminders WHERE user_id = 1 AND next_reminder_date <= CURRENT_DATE;
 -- SELECT p.*, AVG(r.rating) as avg_rating FROM products p LEFT JOIN reviews r ON p.product_id = r.product_id GROUP BY p.product_id;
+
+-- Create admin user
+-- Note: Password is 'admin123' - in production, use a properly hashed password
+INSERT INTO users (username, email, password, first_name, last_name, role) 
+VALUES ('admin', 'admin@eyesonplants.com', '$2a$10$xJQx.e5deVC3zOLGRYcBWOO1PvY4pA0rZH6rEEwiBrY0QCVMWp9t2', 'System', 'Administrator', 'ADMIN');
+--password: admin123

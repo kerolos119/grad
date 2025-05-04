@@ -113,6 +113,7 @@ A Spring Boot RESTful API for an e-commerce platform specializing in live plants
 }
 ```
 
+
 ## Getting Started
 
 ### Prerequisites

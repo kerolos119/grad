@@ -94,12 +94,15 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
-                        .requestMatchers("/api/v1/users/login", "/api/v1/users/register").permitAll()
+                        .requestMatchers("/api/v1/users/login").permitAll()
+                        .requestMatchers("/api/v1/users").permitAll()
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         
                         // Swagger/OpenAPI endpoints
                         .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                        .requestMatchers("/v3/api-docs", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                         
                         // Product related public endpoints
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()

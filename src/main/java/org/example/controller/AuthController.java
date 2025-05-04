@@ -13,8 +13,6 @@ import org.example.model.TokenInfo;
 import org.example.services.CustomUserDetailsServices;
 import org.example.services.UserService;
 import org.example.utils.JwtUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,8 +28,7 @@ import java.util.Map;
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
-    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
-
+    
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
     private final UserService userService;
@@ -43,8 +40,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody Credentials credentials) {
         try {
-            logger.info("Login attempt for user: {}", credentials.getEmail());
-            
             // Authenticate user
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -68,15 +63,10 @@ public class AuthController {
                     UserMapper.INSTANCE.toDto(user) // Convert user to DTO
             );
             
-            logger.info("Login successful for user: {}", credentials.getEmail());
-            
             return ResponseEntity.ok(
                     ApiResponse.success(authResponse, "Login successful")
             );
         } catch (Exception e) {
-            logger.error("Login failed for user: {}, reason: {}", 
-                    credentials.getEmail(), e.getMessage());
-            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
                     ApiResponse.unauthorized("Invalid credentials")
             );
@@ -89,8 +79,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody UsersDto userDto) {
         try {
-            logger.info("Registration attempt for user: {}", userDto.getEmail());
-            
             // Create the new user
             UsersDto createdUser = userService.create(userDto);
             
@@ -108,15 +96,10 @@ public class AuthController {
                     createdUser
             );
             
-            logger.info("Registration successful for user: {}", userDto.getEmail());
-            
             return ResponseEntity.status(HttpStatus.CREATED).body(
                     ApiResponse.created(authResponse, "Registration successful")
             );
         } catch (Exception e) {
-            logger.error("Registration failed for user: {}, reason: {}", 
-                    userDto.getEmail(), e.getMessage());
-            
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     ApiResponse.badRequest(e.getMessage())
             );
@@ -162,12 +145,10 @@ public class AuthController {
                     ApiResponse.success(tokens, "Token refreshed successfully")
             );
         } catch (CustomException e) {
-            logger.error("Token refresh failed: {}", e.getMessage());
             return ResponseEntity.status(e.getStatus()).body(
                     ApiResponse.error(e.getStatus(), e.getMessage())
             );
         } catch (Exception e) {
-            logger.error("Token refresh failed with unexpected error: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     ApiResponse.serverError("Failed to refresh token")
             );

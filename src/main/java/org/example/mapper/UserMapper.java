@@ -1,5 +1,6 @@
 package org.example.mapper;
 
+import jakarta.annotation.PostConstruct;
 import org.example.document.Users;
 
 import org.example.dto.UsersDto;
@@ -12,6 +13,11 @@ public class UserMapper extends AbstractMapper<UsersDto,Users>{
 
     public UserMapper() {
         super(UsersDto.class, Users.class);
+    }
+    
+    @PostConstruct
+    public void init() {
+        INSTANCE = this;
     }
 
     @Override

@@ -7,8 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.example.exception.CustomException;
 import org.example.model.TokenInfo;
 import org.example.utils.JwtUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -27,7 +25,6 @@ import java.util.List;
 
 @Component
 public class JwtFilterServices extends OncePerRequestFilter {
-    private static final Logger logger = LoggerFactory.getLogger(JwtFilterServices.class);
     
     @Autowired
     @Lazy
@@ -66,7 +63,6 @@ public class JwtFilterServices extends OncePerRequestFilter {
         
         // Skip authentication for public paths
         if (isPublicPath(requestPath) || request.getMethod().equals("OPTIONS")) {
-            logger.debug("Skipping authentication for public path: {}", requestPath);
             filterChain.doFilter(request, response);
             return;
         }
@@ -76,7 +72,6 @@ public class JwtFilterServices extends OncePerRequestFilter {
 
             // If no authorization header or not Bearer token, proceed to next filter
             if (authHeader == null || !authHeader.startsWith(headerPrefix)) {
-                logger.debug("No valid authorization header found for: {}", requestPath);
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -86,13 +81,11 @@ public class JwtFilterServices extends OncePerRequestFilter {
             
             // Check if token is valid
             if (!jwtUtils.isValid(token)) {
-                logger.warn("Invalid token used for: {}", requestPath);
                 throw new CustomException("Invalid token", HttpStatus.UNAUTHORIZED);
             }
             
             // Check if token is a refresh token (not allowed for regular API access)
             if (jwtUtils.isRefreshToken(token) && !requestPath.contains("/api/v1/auth/refresh")) {
-                logger.warn("Refresh token used for regular API access: {}", requestPath);
                 throw new CustomException("Invalid token type", HttpStatus.UNAUTHORIZED);
             }
 
@@ -100,7 +93,6 @@ public class JwtFilterServices extends OncePerRequestFilter {
             TokenInfo tokenInfo = jwtUtils.extractInfo(token);
             
             if (!userDetailsServices.isValid(tokenInfo)) {
-                logger.warn("Token contains valid format but invalid user data: {}", tokenInfo.getEmail());
                 throw new CustomException("Invalid user credentials", HttpStatus.UNAUTHORIZED);
             }
 
@@ -120,7 +112,6 @@ public class JwtFilterServices extends OncePerRequestFilter {
             
             // Set authentication in security context
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-            logger.debug("Authentication successful for user: {}", tokenInfo.getEmail());
 
             // Continue the filter chain
             filterChain.doFilter(request, response);
@@ -129,11 +120,9 @@ public class JwtFilterServices extends OncePerRequestFilter {
             handleSecurityException(response, ex.getStatus().value(), ex.getMessage());
         }
         catch (RuntimeException ex) {
-            logger.error("Runtime exception during authentication: {}", ex.getMessage(), ex);
             handleSecurityException(response, HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         }
         catch (Exception ex) {
-            logger.error("Unexpected exception during authentication: {}", ex.getMessage(), ex);
             handleSecurityException(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
                     "Internal server error: " + ex.getMessage());
         }

@@ -3,16 +3,23 @@ package org.example.dto;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.example.model.Gender;
 import org.example.model.Role;
+import org.example.model.Auditable;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public  class UsersDto  {
+public  class UsersDto extends Auditable {
     @NotBlank(message = "Name required")
     private String username;
     @NotBlank(message = "Email required")

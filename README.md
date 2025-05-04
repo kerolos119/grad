@@ -17,41 +17,94 @@ A Spring Boot RESTful API for an e-commerce platform specializing in live plants
 
 ## API Endpoints
 
-### Products
+### Authentication & User Management
 
-- `GET /api/v1/products` - Get all products (with filtering and pagination)
-- `GET /api/v1/products/{productId}` - Get product by ID
-- `POST /api/v1/products` - Create a new product
-- `PUT /api/v1/products/{productId}` - Update product
-- `DELETE /api/v1/products/{productId}` - Delete product
-- `GET /api/v1/products/name/{productName}` - Find product by name
-- `GET /api/v1/products/category/{category}` - Find products by category
-- `GET /api/v1/products/seller/{sellerId}` - Find products by seller
-- `GET /api/v1/products/sale` - Find products on sale
-- `GET /api/v1/products/indoor` - Find indoor or outdoor plants
-- `GET /api/v1/products/price-range` - Find products by price range
-- `GET /api/v1/products/keyword` - Search products by keyword
-- `GET /api/v1/products/in-stock` - Find in-stock products
-- `GET /api/v1/products/search` - Advanced product search
-- `GET /api/v1/products/stage/{stage}` - Find plants by growth stage
+#### Authentication
+- `POST /api/v1/auth/login` - Login with email and password
+- `POST /api/v1/auth/register` - Register a new user with authentication
+- `POST /api/v1/auth/refresh` - Refresh an access token using refresh token
 
-### Plant Care Reminders
-
-- `GET /api/v1/reminders` - Get all reminders
-- `GET /api/v1/reminders/{reminderId}` - Get reminder by ID
-- `POST /api/v1/reminders` - Create a new reminder
-- `PUT /api/v1/reminders/{reminderId}` - Update reminder
-- `DELETE /api/v1/reminders/{reminderId}` - Delete reminder
-- `GET /api/v1/reminders/plant/{plantId}` - Find reminder by plant ID
-- `GET /api/v1/reminders/search` - Search reminders
-
-### Users
-
+#### User Management
 - `POST /api/v1/users` - Register a new user
-- `POST /api/v1/users/login` - Authenticate and receive access token
+- `GET /api/v1/users` - Search users (with pagination)
 - `GET /api/v1/users/{userId}` - Get user by ID
+- `GET /api/v1/users/username/{username}` - Get user by username
+- `GET /api/v1/users/email/{email}` - Get user by email
 - `PUT /api/v1/users/{userId}` - Update user information
 - `DELETE /api/v1/users/{userId}` - Delete user
+
+### Products & Categories
+
+#### Products
+- `GET /api/products` - Get all products (with filtering and pagination)
+- `GET /api/products/{productId}` - Get product by ID
+- `POST /api/products` - Create a new product
+- `PUT /api/products/{productId}` - Update product
+- `DELETE /api/products/{productId}` - Delete product
+- `GET /api/products/search` - Advanced product search with multiple parameters
+- `GET /api/products/category/{category}` - Find products by category
+- `GET /api/products/seller/{sellerId}` - Find products by seller
+- `GET /api/products/sale` - Find products on sale
+- `GET /api/products/indoor` - Find indoor plants
+- `GET /api/products/outdoor` - Find outdoor plants
+- `GET /api/products/price` - Find products by price range
+- `GET /api/products/in-stock` - Find products in stock
+
+#### Categories
+- `GET /api/categories` - Get all product categories
+- `GET /api/categories/{categoryId}` - Get category by ID
+
+### Shopping & Orders
+
+#### Cart Management
+- `GET /api/cart/user/{userId}` - Get user's shopping cart
+- `POST /api/cart/user/{userId}/items` - Add item to cart
+- `PUT /api/cart/user/{userId}/items/{itemId}` - Update cart item
+- `DELETE /api/cart/user/{userId}/items/{itemId}` - Remove item from cart
+- `DELETE /api/cart/user/{userId}` - Clear cart
+
+#### Order Management
+- `GET /api/orders` - Get all orders (admin)
+- `GET /api/orders/{orderId}` - Get order by ID
+- `GET /api/orders/user/{userId}` - Get orders by user
+- `POST /api/orders` - Create a new order
+- `PUT /api/orders/{orderId}/status` - Update order status
+- `GET /api/orders/track/{trackingNumber}` - Track order by tracking number
+
+#### Payments
+- `POST /api/payments/process` - Process payment
+- `POST /api/payments/webhook` - Payment service webhook
+- `GET /api/payments/status/{paymentId}` - Check payment status
+
+### Plants & Plant Care
+
+#### Plants
+- `GET /api/plants` - Get all plants
+- `GET /api/plants/{plantId}` - Get plant by ID
+- `POST /api/plants` - Add a new plant
+- `PUT /api/plants/{plantId}` - Update plant
+- `DELETE /api/plants/{plantId}` - Delete plant
+- `GET /api/plants/user/{userId}` - Get user's plants
+- `GET /api/plants/stage/{stage}` - Find plants by growth stage
+
+#### Reminders
+- `GET /api/reminders` - Get all reminders
+- `GET /api/reminders/{reminderId}` - Get reminder by ID
+- `POST /api/reminders` - Create a new reminder
+- `PUT /api/reminders/{reminderId}` - Update reminder
+- `DELETE /api/reminders/{reminderId}` - Delete reminder
+- `GET /api/reminders/user/{userId}` - Get user's reminders
+- `GET /api/reminders/plant/{plantId}` - Get reminders for a plant
+- `GET /api/reminders/due` - Get due reminders
+- `POST /api/reminders/complete/{reminderId}` - Mark reminder as completed
+
+### Reviews & Ratings
+
+- `GET /api/reviews/product/{productId}` - Get reviews for a product
+- `POST /api/reviews/product/{productId}` - Add a review
+- `PUT /api/reviews/{reviewId}` - Update a review
+- `DELETE /api/reviews/{reviewId}` - Delete a review
+- `GET /api/reviews/user/{userId}` - Get reviews by user
 
 ## Data Models
 

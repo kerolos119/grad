@@ -11,6 +11,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class AppConfig {
@@ -26,29 +27,31 @@ public class AppConfig {
     }
 
     @Bean
-    public MessageSource messageSource(){
-    ReloadableResourceBundleMessageSource messageSource =
-            new ReloadableResourceBundleMessageSource();
-    messageSource.setBasenames(
-            "classpath:messages/exception",
-            "classpath:messages/validation"
-    );
-    messageSource.setDefaultEncoding("Utf-8");
-    messageSource.setDefaultLocale(Locale.ENGLISH);
-    messageSource.setCacheSeconds(600);
-    return messageSource;
+    public MessageSource messageSource() {
+        ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+        messageSource.setBasenames(
+                "classpath:messages/exception",
+                "classpath:messages/validation",
+                "classpath:messages/success"
+        );
+        messageSource.setDefaultEncoding("UTF-8");
+        messageSource.setDefaultLocale(Locale.ENGLISH);
+        messageSource.setCacheSeconds((int) TimeUnit.HOURS.toSeconds(1));
+        return messageSource;
     }
+    
     @Bean
-    public LocaleResolver resolver(){
+    public LocaleResolver localeResolver() {
         AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
         localeResolver.setDefaultLocale(Locale.ENGLISH);
         return localeResolver;
     }
+    
     @Bean
-    public LocalValidatorFactoryBean validator(MessageSource messageSource){
+    public LocalValidatorFactoryBean validator(MessageSource messageSource) {
         LocalValidatorFactoryBean validatorFactoryBean = new LocalValidatorFactoryBean();
         validatorFactoryBean.setValidationMessageSource(messageSource);
-        return  validatorFactoryBean;
+        return validatorFactoryBean;
     }
 }
 

@@ -1,19 +1,17 @@
-# Plant E-Commerce API
+# GreenHub API
 
-A Spring Boot RESTful API for an e-commerce platform specializing in live plants, dried plants, and gardening supplies.
+A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gardening assistant.
 
-## Features
+## Core Functionalities
 
-- **Product Management**: Complete CRUD operations for plant products
-- **Product Categories**: Support for various plant types (live plants, dried plants, seeds, etc.)
-- **Search & Filtering**: Advanced search capabilities with multiple filters
-- **User Management**: User registration, authentication, and profile management
-- **Plant Care**: Reminder system for watering and plant care
-- **Growth Tracking**: Track plant growth stages (seed, leaf, flowers, fruits)
-- **Standardized API Responses**: Consistent response format for easy frontend integration
-- **Error Handling**: Comprehensive exception handling with meaningful messages
-- **Documentation**: Swagger API documentation
-- **Security**: JWT authentication for secure access
+- **Plant & Product Management**: CRUD operations for plant products with detailed categorization
+- **User Authentication**: Secure JWT-based authentication system
+- **Plant Care Assistant**: Reminders, growth tracking, and care instructions
+- **Push Notifications**: Real-time notifications via Firebase Cloud Messaging
+- **Shopping Experience**: Cart management, order processing, and payment integration
+- **Reviews & Ratings**: Product review system
+- **RESTful API Design**: Standardized responses and comprehensive error handling
+- **API Documentation**: Swagger/OpenAPI integration
 
 ## API Endpoints
 
@@ -88,18 +86,26 @@ A Spring Boot RESTful API for an e-commerce platform specializing in live plants
 - `GET /api/plants/stage/{stage}` - Find plants by growth stage
 
 #### Reminders
-- `GET /api/reminders` - Get all reminders
-- `GET /api/reminders/{reminderId}` - Get reminder by ID
-- `POST /api/reminders` - Create a new reminder
-- `PUT /api/reminders/{reminderId}` - Update reminder
-- `DELETE /api/reminders/{reminderId}` - Delete reminder
-- `GET /api/reminders/user/{userId}` - Get user's reminders
-- `GET /api/reminders/plant/{plantId}` - Get reminders for a plant
-- `GET /api/reminders/due` - Get due reminders
-- `POST /api/reminders/complete/{reminderId}` - Mark reminder as completed
+- `GET /api/v1/reminders` - Get all reminders
+- `GET /api/v1/reminders/{reminderId}` - Get reminder by ID
+- `POST /api/v1/reminders` - Create a new reminder
+- `PUT /api/v1/reminders/{reminderId}` - Update reminder
+- `DELETE /api/v1/reminders/{reminderId}` - Delete reminder
+- `GET /api/v1/reminders/plant/{plantId}` - Get reminders for a plant
+- `GET /api/v1/reminders/search` - Search reminders with filters and pagination
+- `POST /api/v1/reminders/{reminderId}/send-notification` - Send notification for a specific reminder
+- `POST /api/v1/reminders/send-due-reminders` - Process and send all due reminders
+
+#### Notifications
+- `POST /notifications/token` - Send notification to a specific device token (Admin only)
+- `POST /notifications/topic` - Send notification to a topic (Admin only)
+- `POST /notifications/subscribe` - Subscribe tokens to a topic
+- `POST /notifications/unsubscribe` - Unsubscribe tokens from a topic
+- `POST /notifications/tokens` - Send notification to multiple tokens (Admin only)
+- `POST /notifications/reminder` - Send a plant care reminder notification to a user
+- `POST /notifications/send-plant-reminder` - Send a plant reminder directly to a device token
 
 ### Reviews & Ratings
-
 - `GET /api/reviews/product/{productId}` - Get reviews for a product
 - `POST /api/reviews/product/{productId}` - Add a review
 - `PUT /api/reviews/{reviewId}` - Update a review
@@ -109,7 +115,6 @@ A Spring Boot RESTful API for an e-commerce platform specializing in live plants
 ## Data Models
 
 ### Product
-
 ```json
 {
   "id": 1,
@@ -135,7 +140,6 @@ A Spring Boot RESTful API for an e-commerce platform specializing in live plants
 ```
 
 ### Plant
-
 ```json
 {
   "plantId": 1,
@@ -154,79 +158,70 @@ A Spring Boot RESTful API for an e-commerce platform specializing in live plants
 ```
 
 ### Reminder
-
 ```json
 {
-  "user": { "userId": 101, "username": "plantlover" },
-  "plant": { "plantId": 1, "name": "Monstera Deliciosa" },
-  "plantId": "1",
+  "id": 1,
+  "userId": 101,
+  "userName": "plantlover",
+  "plantId": 1,
+  "plantName": "Monstera Deliciosa",
   "reminderType": "WATERING",
   "nextReminderDate": "2023-06-15",
   "frequency": 7
 }
 ```
 
-
-## Getting Started
-
-### Prerequisites
-
-- Java 17 or higher
-- Maven 3.6+
-- MySQL/PostgreSQL database
-
-### Installation
-
-1. Clone the repository
-   ```
-   git clone https://github.com/yourusername/plant-ecommerce-api.git
-   ```
-
-2. Configure database in `application.properties`
-   ```
-   spring.datasource.url=jdbc:mysql://localhost:3306/plant_store
-   spring.datasource.username=YOUR_USERNAME
-   spring.datasource.password=YOUR_PASSWORD
-   ```
-
-3. Build the project
-   ```
-   mvn clean install
-   ```
-
-4. Run the application
-   ```
-   mvn spring-boot:run
-   ```
-
-5. Access the API at `http://localhost:8080`
-   
-6. View API documentation at `http://localhost:8080/swagger-ui.html`
-
-## Frontend Integration
-
-The API is designed for easy integration with web and mobile frontends:
-
-- **Standardized Response Format**: All responses follow a consistent structure
-- **CORS Support**: Built-in cross-origin support for web applications
-- **Detailed Error Messages**: Specific validation feedback for forms
-
-Example response:
-
+### Push Notification Request
 ```json
 {
-  "success": true,
-  "status": 200,
-  "message": "Products retrieved successfully",
-  "timestamp": "2023-06-15T10:30:45.123Z",
-  "data": [
-    {
-      "id": 1,
-      "productName": "Monstera Deliciosa",
-      "category": "INDOOR_PLANTS",
-      "price": 29.99,
-      /* other product fields */
-    }
-  ]
+  "title": "Plant Care Reminder",
+  "body": "Time to water your Monstera Deliciosa",
+  "token": "device-token-123",
+  "topic": "plant-care",
+  "data": {
+    "plantId": "1",
+    "reminderType": "WATERING",
+    "timestamp": "1623764345123"
+  }
 }
-``` 
+```
+
+## Setup & Installation
+
+### Requirements
+- Java 17+
+- Maven 3.6+
+- MySQL/PostgreSQL
+- Firebase project
+
+### Quick Start
+1. Clone the repository
+   ```
+   git clone https://github.com/yourusername/greenhub-api.git
+   ```
+
+2. Configure database in `application.properties`:
+   ```
+   spring.datasource.url=jdbc:mysql://localhost:3306/greenhub_db
+   spring.datasource.username=your_username
+   spring.datasource.password=your_password
+   ```
+
+3. Configure Firebase:
+   ```
+   firebase.service-account-file=classpath:firebase-service-account.json
+   firebase.database-url=https://your-project-id.firebaseio.com
+   ```
+
+4. Build: `mvn clean install`
+5. Run: `mvn spring-boot:run`
+6. Access API at `http://localhost:8080`
+7. View documentation at `http://localhost:8080/swagger-ui.html`
+
+## Security & Integration
+
+- **CORS enabled**: Frontend integration ready
+- **JWT Authentication**: Secure API access
+- **Response Standardization**: Consistent API behavior
+- **Mobile Support**: Push notifications for apps
+```

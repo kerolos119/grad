@@ -45,6 +45,9 @@ public class SecurityConfig {
     @Value("${cors.allow-credentials:true}")
     private boolean allowCredentials;
 
+    @Value("${cors.max-age:3600}")
+    private long maxAge;
+
     public SecurityConfig(
             CustomUserDetailsServices userDetailsServices,
             JwtFilterServices filterServices
@@ -80,7 +83,8 @@ public class SecurityConfig {
         config.setAllowCredentials(allowCredentials);
         config.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
         config.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
-        config.setExposedHeaders(Arrays.asList("Authorization"));
+        config.setExposedHeaders(Arrays.asList("Authorization", "Content-Disposition"));
+        config.setMaxAge(maxAge);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
@@ -94,26 +98,28 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
+                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/api/v1/users/login").permitAll()
                         .requestMatchers("/api/v1/users").permitAll()
-                        .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         
-                        // Swagger/OpenAPI endpoints
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                        .requestMatchers("/v3/api-docs", "/swagger-ui.html", "/swagger-ui/**", "/swagger-resources/**").permitAll()
+                        // API documentation
+                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**").permitAll()
                         
-                        // Product related public endpoints
+                        // Public product and plant endpoints
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/plants/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
                         
-                        // Payment webhooks
+                        // Payment integration
                         .requestMatchers("/api/payments/webhook/**").permitAll()
                         
                         // Order tracking for guests
                         .requestMatchers(HttpMethod.GET, "/api/orders/track/**").permitAll()
+                        
+                        // Health check endpoint
+                        .requestMatchers("/actuator/health").permitAll()
                         
                         // All other requests need authentication
                         .anyRequest().authenticated()

@@ -10,12 +10,14 @@ import lombok.RequiredArgsConstructor;
 import org.example.dto.PageResult;
 import org.example.dto.ReminderDto;
 import org.example.model.ApiResponse;
+import org.example.services.ReminderNotificationService;
 import org.example.services.ReminderServices;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Reminders", description = "Reminder management APIs")
 public class ReminderController {
     private final ReminderServices reminderService;
+    private final ReminderNotificationService reminderNotificationService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -130,5 +133,43 @@ public class ReminderController {
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
         PageResult<ReminderDto> result = reminderService.search(plant, reminderType, pageable);
         return ResponseEntity.ok(ApiResponse.success(result, "Search results"));
+    }
+
+    @PostMapping("/{reminderId}/send-notification")
+    @Operation(
+        summary = "Send reminder notification",
+        description = "Sends a notification for a specific reminder",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    public ResponseEntity<ApiResponse<String>> sendReminderNotification(
+            @Parameter(description = "Reminder ID") 
+            @PathVariable Integer reminderId) {
+        // Find the reminder
+        ReminderDto reminder = reminderService.findById(reminderId);
+        
+        // Send notification using the reminder details
+        reminderNotificationService.sendTestReminderNotification(
+                reminder.getUserId().intValue(),
+                reminder.getPlantId(),
+                reminder.getReminderType()
+        );
+        
+        return ResponseEntity.ok(ApiResponse.success(
+                "Notification sent for reminder ID: " + reminderId,
+                "Reminder notification sent successfully"));
+    }
+
+    @PostMapping("/send-due-reminders")
+    @Operation(
+        summary = "Send all due reminders",
+        description = "Checks and sends notifications for all reminders due today",
+        security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> sendDueReminders() {
+        reminderNotificationService.sendDueReminders();
+        return ResponseEntity.ok(ApiResponse.success(
+                "Due reminders processed",
+                "All due reminders have been processed and notifications sent"));
     }
 }

@@ -67,4 +67,7 @@ public class Users extends Auditable {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(name = "device_token")
+    private String deviceToken;
 }

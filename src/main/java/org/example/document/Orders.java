@@ -76,4 +76,19 @@ public class Orders {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    // Track if order status notification was sent
+    @Column(name = "status_notification_sent")
+    @Builder.Default
+    private Boolean statusNotificationSent = false;
+    
+    // Track if payment status notification was sent
+    @Column(name = "payment_notification_sent")
+    @Builder.Default
+    private Boolean paymentNotificationSent = false;
+    
+    // Track if shipping notification was sent
+    @Column(name = "shipping_notification_sent")
+    @Builder.Default
+    private Boolean shippingNotificationSent = false;
 } 

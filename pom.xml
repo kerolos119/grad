@@ -14,6 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jjwt.version>0.12.6</jjwt.version>
         <springdoc.version>2.1.0</springdoc.version>
+        <firebase.version>9.4.3</firebase.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -63,6 +64,13 @@
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
+        </dependency>
+
+        <!-- Firebase -->
+        <dependency>
+            <groupId>com.google.firebase</groupId>
+            <artifactId>firebase-admin</artifactId>
+            <version>${firebase.version}</version>
         </dependency>
 
         <!-- JWT Authentication -->

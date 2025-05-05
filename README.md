@@ -207,11 +207,18 @@ A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gard
    spring.datasource.password=your_password
    ```
 
-3. Configure Firebase:
-   ```
-   firebase.service-account-file=classpath:firebase-service-account.json
-   firebase.database-url=https://your-project-id.firebaseio.com
-   ```
+3. **Firebase Setup**:
+   - Create a Firebase project in the [Firebase Console](https://console.firebase.google.com/)
+   - Go to Project Settings > Service accounts
+   - Click "Generate new private key" to download your service account credentials
+   - Rename the downloaded file to `firebase-service-account.json`
+   - Place this file in `src/main/resources/`
+   - **IMPORTANT**: This file contains sensitive credentials and should never be committed to version control
+   - Update `application.properties` with:
+     ```
+     firebase.service-account-file=classpath:firebase-service-account.json
+     firebase.database-url=https://your-project-id.firebaseio.com
+     ```
 
 4. Build: `mvn clean install`
 5. Run: `mvn spring-boot:run`
@@ -224,4 +231,10 @@ A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gard
 - **JWT Authentication**: Secure API access
 - **Response Standardization**: Consistent API behavior
 - **Mobile Support**: Push notifications for apps
-```
+
+## Security Notes
+
+- **Never commit sensitive credentials** to the repository
+- Firebase service account files contain private keys and should be kept confidential
+- The `.gitignore` file excludes `src/main/resources/firebase-service-account.json`
+- For production deployment, consider using environment variables or a secure vault solution instead of file-based credentials

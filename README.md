@@ -7,6 +7,7 @@ A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gard
 - **Plant & Product Management**: CRUD operations for plant products with detailed categorization
 - **User Authentication**: Secure JWT-based authentication system
 - **Plant Care Assistant**: Reminders, growth tracking, and care instructions
+- **AI Plant Advisor**: AI-powered plant care recommendations and troubleshooting
 - **Push Notifications**: Real-time notifications via Firebase Cloud Messaging
 - **Shopping Experience**: Cart management, order processing, and payment integration
 - **Reviews & Ratings**: Product review system
@@ -112,6 +113,12 @@ A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gard
 - `DELETE /api/reviews/{reviewId}` - Delete a review
 - `GET /api/reviews/user/{userId}` - Get reviews by user
 
+### AI-Powered Services
+
+#### Plant AI Assistant
+- `POST /api/v1/ai/predict` - Get AI-generated response for any plant-related query
+- `GET /api/v1/ai/plant-care/{plantName}` - Get AI-powered care advice for a specific plant
+
 ## Data Models
 
 ### Product
@@ -193,6 +200,7 @@ A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gard
 - Maven 3.6+
 - MySQL/PostgreSQL
 - Firebase project
+- Local or remote AI service endpoint (default: http://127.0.0.1:5000/predict)
 
 ### Quick Start
 1. Clone the repository
@@ -238,3 +246,17 @@ A Spring Boot RESTful API for a comprehensive plant e-commerce platform and gard
 - Firebase service account files contain private keys and should be kept confidential
 - The `.gitignore` file excludes `src/main/resources/firebase-service-account.json`
 - For production deployment, consider using environment variables or a secure vault solution instead of file-based credentials
+
+## AI Integration
+
+The GreenHub API integrates with an AI service that provides plant care recommendations and answers to gardening questions. By default, the API communicates with a local AI service running at http://127.0.0.1:5000/predict.
+
+### Configuration
+To change the AI service endpoint, modify the `apiUrl` in the `AIService.java` file.
+
+### Usage
+Send plant care questions and receive AI-powered recommendations through the available endpoints:
+- Use `/api/v1/ai/predict` with a JSON body containing a "prompt" field for general queries
+- Use `/api/v1/ai/plant-care/{plantName}` to get specific care advice for a given plant
+
+Example:

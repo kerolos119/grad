@@ -1,5 +1,5 @@
 -- Create the database
-CREATE DATABASE EyesOnPlants;
+CREATE DATABASE IF NOT EXISTS EyesOnPlants;
 
 -- Select the database
 USE EyesOnPlants;
@@ -153,6 +153,7 @@ CREATE INDEX idx_products_stock ON products(stock_quantity);
 CREATE INDEX idx_reminders_next_date ON reminders(next_reminder_date);
 CREATE INDEX idx_orders_user ON orders(user_id);
 CREATE INDEX idx_orders_status ON orders(status);
+
 
 -- Example queries
 -- SELECT * FROM products WHERE category = 'INDOOR_PLANTS' AND is_on_sale = TRUE;

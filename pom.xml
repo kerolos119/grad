@@ -151,14 +151,33 @@
                     </excludes>
                 </configuration>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>com.google.cloud.tools</groupId>-->
+<!--                <artifactId>jib-maven-plugin</artifactId>-->
+<!--                <version>3.3.1</version>-->
+<!--                <configuration>-->
+<!--                    <to>-->
+<!--                        <image>kerolos119/eyes_on_plant:0.1</image>-->
+<!--                    </to>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
                     <to>
-                        <image>kerolos119/eyes_on_plant:0.1</image>
+                        <image>kerolos119/grad:0.1</image>
+
                     </to>
+<!--                    <from>-->
+<!--                        <image>openjdk:17-jre-slim</image>-->
+<!--                    </from>-->
+                    <container>
+                        <ports>
+                            <port>8080</port>
+                        </ports>
+                    </container>
                 </configuration>
             </plugin>
         </plugins>

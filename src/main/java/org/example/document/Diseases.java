@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "Diseases")
@@ -35,7 +37,9 @@ public class Diseases {
     @Column(name = "treatment",columnDefinition = "TEXT")
     private String treatment;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",referencedColumnName = "user_id",nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Users user;
 }

@@ -21,13 +21,13 @@ public class Reviews {
     private Integer reviewId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "product_id", referencedColumnName = "product_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Products product;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Users user;

@@ -42,7 +42,7 @@ public class Plants {
     private PlantStage plantStage;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @JoinColumn(name = "user_id", referencedColumnName = "user_id",nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Users user;

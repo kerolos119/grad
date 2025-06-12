@@ -22,7 +22,7 @@ public class UserDeviceController {
     private final UserRepository userRepository;
     
     @PostMapping("/token")
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(
         summary = "Register device token",
         description = "Registers or updates a user's device token for push notifications",
@@ -44,7 +44,7 @@ public class UserDeviceController {
     }
     
     @DeleteMapping("/token/{userId}")
-    @PreAuthorize("hasAnyRole('USER')")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(
         summary = "Delete device token",
         description = "Removes a user's device token",

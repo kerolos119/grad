@@ -2,6 +2,7 @@ package org.example.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import org.example.document.Users;
 import org.example.exception.UserException;
 import org.example.model.TokenInfo;
@@ -82,30 +83,56 @@ public class JwtUtils {
     }
 
     /**
-     * Validates a token - always return true
+     * Validates a token
      */
     public Boolean isValid(String token) {
-        return true;
+        try {
+            Jwts.parser()
+                    .verifyWith(getSigningKey())
+                    .build()
+                    .parseSignedClaims(token);
+            return true;
+        } catch (SignatureException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("JWT validation error: {}", e.getMessage());
+        }
+        return false;
     }
     
     /**
-     * Checks if a token is a refresh token - always return false
+     * Checks if a token is a refresh token
      */
     public boolean isRefreshToken(String token) {
-        return false;
+        try {
+            Claims claims = extractAllClaims(token);
+            return "REFRESH".equals(claims.get("type"));
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
-     * Extracts user information from a token - return default values
+     * Extracts user information from a token
      */
-    public TokenInfo extractInfo(String token) {
+    public TokenInfo extractInfo(String token) throws JwtException {
+        Claims claims = extractAllClaims(token);
+        
+        String roleString = claims.get("role", String.class);
+        
         return TokenInfo.builder()
-                .email("default@example.com")
-                .userId(1L)
-                .roles("USER")
-                .firstName("Default")
-                .lastName("User")
-                .tokenType("ACCESS")
+                .email(claims.get("email", String.class))
+                .userId(claims.get("userId", Long.class))
+                .roles(roleString)
+                .firstName(claims.getOrDefault("firstName", "").toString())
+                .lastName(claims.getOrDefault("lastName", "").toString())
+                .tokenType(claims.getOrDefault("type", "ACCESS").toString())
                 .build();
     }
     

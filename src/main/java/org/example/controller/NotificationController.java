@@ -30,14 +30,14 @@ public class NotificationController {
     private ReminderNotificationService reminderNotificationService;
 
     @PostMapping("/token")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> sendNotificationToToken(@RequestBody PushNotificationRequest request) {
         notificationService.sendNotificationToToken(request);
         return new ResponseEntity<>("Notification sent to token: " + request.getToken(), HttpStatus.OK);
     }
 
     @PostMapping("/topic")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> sendNotificationToTopic(@RequestBody PushNotificationRequest request) {
         notificationService.sendNotificationToTopic(request);
         return new ResponseEntity<>("Notification sent to topic: " + request.getTopic(), HttpStatus.OK);
@@ -60,7 +60,7 @@ public class NotificationController {
     }
     
     @PostMapping("/tokens")
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> sendNotificationToMultipleTokens(
             @RequestParam List<String> tokens,
             @RequestBody PushNotificationRequest request) {

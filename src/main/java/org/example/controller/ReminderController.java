@@ -165,7 +165,7 @@ public class ReminderController {
         description = "Checks and sends notifications for all reminders due today",
         security = @SecurityRequirement(name = "bearerAuth")
     )
-    @PreAuthorize("hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<String>> sendDueReminders() {
         reminderNotificationService.sendDueReminders();
         return ResponseEntity.ok(ApiResponse.success(

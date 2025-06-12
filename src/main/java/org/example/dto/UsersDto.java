@@ -29,12 +29,6 @@ public  class UsersDto extends Auditable {
     private String phoneNumber;
     @NotNull(message = "Gender required")
     private Gender gender;
-    @NotBlank(message = "First name required")
-    @Size(max = 50, message = "First name cannot exceed 50 characters")
-    private String firstName;
-    @NotBlank(message = "Last name required")
-    @Size(max = 50, message = "Last name cannot exceed 50 characters")
-    private String lastName;
     @NotBlank
     @Size(min = 8)
     private String password;

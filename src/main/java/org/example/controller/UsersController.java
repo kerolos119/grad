@@ -2,19 +2,21 @@ package org.example.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.dto.Credentials;
 import org.example.dto.UsersDto;
 import org.example.model.ApiResponse;
+import org.example.model.AuthResponse;
 import org.example.services.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -27,6 +29,44 @@ public class UsersController {
 
     private final UserService userService;
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(
+        summary = "Register a new user",
+        description = "Creates a new user account with the provided information"
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "201", 
+            description = "User created successfully"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "400", 
+            description = "Invalid input or email/username already exists")
+    })
+    public ResponseEntity<ApiResponse<UsersDto>> registerUser(@Valid @RequestBody UsersDto dto) {
+        UsersDto result = userService.create(dto);
+        return ResponseEntity
+            .status(HttpStatus.CREATED)
+            .body(ApiResponse.created(result, "User registered successfully"));
+    }
+
+    @PostMapping("/login")
+    @Operation(
+        summary = "Authenticate user",
+        description = "Authenticates user credentials and returns a token"
+    )
+    @ApiResponses(value = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "200", 
+            description = "Authentication successful"),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "401", 
+            description = "Invalid credentials")
+    })
+    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody Credentials request) {
+        AuthResponse response = userService.authenticate(request);
+        return ResponseEntity.ok(ApiResponse.success(response, "Authentication successful"));
+    }
 
     @GetMapping
     @Operation(
@@ -109,7 +149,6 @@ public class UsersController {
     }
 
     @DeleteMapping("/{userId}")
-    @PreAuthorize("hasAnyRole('USER')")
     @Operation(
         summary = "Delete user",
         security = @SecurityRequirement(name = "bearerAuth")

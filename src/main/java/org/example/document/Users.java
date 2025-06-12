@@ -8,7 +8,6 @@ import org.example.model.Auditable;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import org.example.model.Gender;
 
 @Entity
 @Table(name = "users")
@@ -71,8 +70,4 @@ public class Users extends Auditable {
 
     @Column(name = "device_token")
     private String deviceToken;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
-    private Gender gender;
 }

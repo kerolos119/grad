@@ -28,10 +28,10 @@ public class OrderController {
     private final OrderNotificationService orderNotificationService;
     
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Get all orders",
-        description = "Retrieves all orders in the system (Admin only)",
+        description = "Retrieves all orders in the system",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<ApiResponse<List<OrderDto>>> getAllOrders() {
@@ -92,10 +92,10 @@ public class OrderController {
     }
     
     @PatchMapping("/{orderId}/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Update order status",
-        description = "Updates the status of an order (Admin only)",
+        description = "Updates the status of an order",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<ApiResponse<Void>> updateOrderStatus(
@@ -107,10 +107,10 @@ public class OrderController {
     }
     
     @DeleteMapping("/{orderId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Delete an order",
-        description = "Deletes an order from the system (Admin only)",
+        description = "Deletes an order from the system",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<ApiResponse<Void>> deleteOrder(
@@ -123,7 +123,7 @@ public class OrderController {
     // Notification endpoints
     
     @PostMapping("/{orderId}/notify/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send order status notification",
         description = "Sends a push notification about the order status",
@@ -141,7 +141,7 @@ public class OrderController {
     }
     
     @PostMapping("/{orderId}/notify/payment")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send payment status notification",
         description = "Sends a push notification about the payment status",
@@ -159,7 +159,7 @@ public class OrderController {
     }
     
     @PostMapping("/{orderId}/notify/shipping")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send shipping notification",
         description = "Sends a push notification that the order has shipped",

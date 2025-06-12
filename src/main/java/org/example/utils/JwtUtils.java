@@ -64,8 +64,7 @@ public class JwtUtils {
         claims.put("email", user.getEmail());
         claims.put("role", user.getRole().toString());
         claims.put("type", tokenType);
-        claims.put("firstName", user.getFirstName());
-        claims.put("lastName", user.getLastName());
+        claims.put("username", user.getUsername());
         
         try {
             return Jwts.builder()
@@ -130,8 +129,6 @@ public class JwtUtils {
                 .email(claims.get("email", String.class))
                 .userId(claims.get("userId", Long.class))
                 .roles(roleString)
-                .firstName(claims.getOrDefault("firstName", "").toString())
-                .lastName(claims.getOrDefault("lastName", "").toString())
                 .tokenType(claims.getOrDefault("type", "ACCESS").toString())
                 .build();
     }

@@ -135,10 +135,11 @@ public class ReminderController {
         return ResponseEntity.ok(ApiResponse.success(result, "Search results"));
     }
 
-    @PostMapping("/{reminderId}/send-notification")
+    @PostMapping("/{reminderId}/notify")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send reminder notification",
-        description = "Sends a notification for a specific reminder",
+        description = "Sends a push notification for a reminder",
         security = @SecurityRequirement(name = "bearerAuth")
     )
     public ResponseEntity<ApiResponse<String>> sendReminderNotification(

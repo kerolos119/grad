@@ -40,13 +40,6 @@ public class Users extends Auditable {
     @Size(min = 6, message = "Password must contain at least 6 characters")
     private String password;
 
-    @Column(name = "first_name", length = 50)
-    @Size(max = 50, message = "First name cannot exceed 50 characters")
-    private String firstName;
-
-    @Column(name = "last_name", length = 50)
-    @Size(max = 50, message = "Last name cannot exceed 50 characters")
-    private String lastName;
 
     @Column(name = "phone_number", length = 20)
     @Pattern(regexp = "^[0-9+]+$", message = "Invalid phone number")

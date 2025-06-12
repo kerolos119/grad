@@ -25,6 +25,7 @@ public class OpenApiConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("Eyes On Plants API")
+                        .version("1.0")
                         .description("E-commerce API for plant selling platform with order management, payments, and user authentication")
                         .contact(new Contact()
                                 .name("Support")

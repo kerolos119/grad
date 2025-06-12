@@ -43,6 +43,17 @@ public class UserService {
             throw new UserException("Username is already taken");
         }
 
+        // Validate required fields
+        if (dto.getFirstName() == null || dto.getFirstName().trim().isEmpty()) {
+            throw new UserException("First name is required");
+        }
+        if (dto.getLastName() == null || dto.getLastName().trim().isEmpty()) {
+            throw new UserException("Last name is required");
+        }
+        if (dto.getGender() == null) {
+            throw new UserException("Gender is required");
+        }
+
         // Map DTO to entity and encode password
         Users user = UserMapper.INSTANCE.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -106,6 +117,18 @@ public class UserService {
         // Update other fields if provided
         if (dto.getPhoneNumber() != null) {
             user.setPhoneNumber(dto.getPhoneNumber());
+        }
+        
+        if (dto.getFirstName() != null) {
+            user.setFirstName(dto.getFirstName());
+        }
+        
+        if (dto.getLastName() != null) {
+            user.setLastName(dto.getLastName());
+        }
+        
+        if (dto.getGender() != null) {
+            user.setGender(dto.getGender());
         }
         
         if (dto.getRole() != null) {

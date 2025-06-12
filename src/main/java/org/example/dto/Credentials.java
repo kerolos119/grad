@@ -10,14 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Credentials {
     @NotEmpty
-    private String username;
-    @NotEmpty
     public String password;
     @NotEmpty
     private String email;
 
 
-    public CharSequence password() {
-        return password();
-    }
 }

@@ -18,14 +18,14 @@ public class CartController {
     private final CartServices cartServices;
     
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<CartDto>> getCartByUser(@PathVariable Long userId) {
         ApiResponse<CartDto> response = cartServices.getCartByUser(userId);
         return ResponseEntity.ok(response);
     }
     
     @PostMapping("/user/{userId}/items")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<CartDto>> addItemToCart(
             @PathVariable Long userId,
             @Valid @RequestBody CartItemDto cartItemDto) {
@@ -34,7 +34,7 @@ public class CartController {
     }
     
     @PutMapping("/user/{userId}/items/{itemId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<CartDto>> updateCartItem(
             @PathVariable Long userId,
             @PathVariable Integer itemId,
@@ -44,7 +44,7 @@ public class CartController {
     }
     
     @DeleteMapping("/user/{userId}/items/{itemId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<CartDto>> removeCartItem(
             @PathVariable Long userId,
             @PathVariable Integer itemId) {
@@ -53,7 +53,7 @@ public class CartController {
     }
     
     @DeleteMapping("/user/{userId}/clear")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     public ResponseEntity<ApiResponse<Void>> clearCart(@PathVariable Long userId) {
         ApiResponse<Void> response = cartServices.clearCart(userId);
         return ResponseEntity.ok(response);

@@ -163,6 +163,6 @@ CREATE INDEX idx_orders_status ON orders(status);
 
 -- Create admin user
 -- Note: Password is 'admin123' - in production, use a properly hashed password
-INSERT INTO users (username, email, password, first_name, last_name, role) 
-VALUES ('admin', 'admin@eyesonplants.com', '$2a$10$xJQx.e5deVC3zOLGRYcBWOO1PvY4pA0rZH6rEEwiBrY0QCVMWp9t2', 'System', 'Administrator', 'ADMIN');
+-- INSERT INTO users (username, email, password, first_name, last_name, role) 
+-- VALUES ('admin', 'admin@eyesonplants.com', '$2a$10$xJQx.e5deVC3zOLGRYcBWOO1PvY4pA0rZH6rEEwiBrY0QCVMWp9t2', 'System', 'Administrator', 'ADMIN');
 --password: admin123

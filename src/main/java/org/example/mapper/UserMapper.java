@@ -26,6 +26,9 @@ public class UserMapper extends AbstractMapper<UsersDto,Users>{
         entity.setEmail(dto.getEmail());
         entity.setPhoneNumber(dto.getPhoneNumber());
         entity.setPassword(dto.getPassword());
+        entity.setFirstName(dto.getFirstName());
+        entity.setLastName(dto.getLastName());
+        entity.setGender(dto.getGender());
         return entity;
     }
 

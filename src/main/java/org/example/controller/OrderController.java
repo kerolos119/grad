@@ -28,7 +28,7 @@ public class OrderController {
     private final OrderNotificationService orderNotificationService;
     
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Get all orders",
         description = "Retrieves all orders in the system (Admin only)",
@@ -39,7 +39,7 @@ public class OrderController {
     }
     
     @GetMapping("/{orderId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     @Operation(
         summary = "Get order by ID",
         description = "Retrieves an order by its ID",
@@ -52,7 +52,7 @@ public class OrderController {
     }
     
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     @Operation(
         summary = "Get orders by user",
         description = "Retrieves all orders placed by a specific user",
@@ -65,7 +65,7 @@ public class OrderController {
     }
     
     @PostMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     @Operation(
         summary = "Create a new order",
         description = "Creates a new order in the system",
@@ -77,7 +77,7 @@ public class OrderController {
     }
     
     @PutMapping("/{orderId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER')")
     @Operation(
         summary = "Update an order",
         description = "Updates an existing order",
@@ -92,7 +92,7 @@ public class OrderController {
     }
     
     @PatchMapping("/{orderId}/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Update order status",
         description = "Updates the status of an order (Admin only)",
@@ -107,7 +107,7 @@ public class OrderController {
     }
     
     @DeleteMapping("/{orderId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Delete an order",
         description = "Deletes an order from the system (Admin only)",
@@ -123,7 +123,7 @@ public class OrderController {
     // Notification endpoints
     
     @PostMapping("/{orderId}/notify/status")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send order status notification",
         description = "Sends a push notification about the order status",
@@ -141,7 +141,7 @@ public class OrderController {
     }
     
     @PostMapping("/{orderId}/notify/payment")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send payment status notification",
         description = "Sends a push notification about the payment status",
@@ -159,7 +159,7 @@ public class OrderController {
     }
     
     @PostMapping("/{orderId}/notify/shipping")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send shipping notification",
         description = "Sends a push notification that the order has shipped",
@@ -177,7 +177,7 @@ public class OrderController {
     }
     
     @PostMapping("/{orderId}/notify/custom")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @Operation(
         summary = "Send custom order notification",
         description = "Sends a custom push notification about an order",

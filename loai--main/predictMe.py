@@ -1,14 +1,24 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, flash, redirect
 import cv2
 import numpy as np
 import tensorflow as tf
 import pandas as pd
+import os
 
 app = Flask(__name__)
+app.secret_key = 'your-very-secret-key'  # ضع هنا مفتاحًا سريًا وآمنًا
 
-model = tf.keras.models.load_model('myModel.h5') # the path of the model
+# Get the directory where this script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
-df = pd.read_csv('p4.csv')  # the path of the csv file
+# Use absolute paths for model and CSV files
+model_path = os.path.join(script_dir, 'myModel.h5')
+csv_path = os.path.join(script_dir, 'p4.csv')
+
+model = tf.keras.models.load_model('d:/grad2/loai--main/myModel.h5')
+ # the path of the model
+
+df = pd.read_csv(csv_path)  # the path of the csv file
 
 def preprocess_image(image_path):
     image = cv2.imread(image_path)
@@ -24,17 +34,25 @@ def Loai():
     
 @app.route('/predict', methods=['POST'])
 def predict():
-    # return "Hello World"
-
     # check if the post request has the file part
     if 'file' not in request.files:
-      flash('No file part')
-      return redirect(request.url)
+        return jsonify({
+            'error': 'No file provided',
+            'message': 'Please send an image file with the key "file"'
+        }), 400
+    
     image_file = request.files['file']
+    
+    # Check if file is empty
+    if image_file.filename == '':
+        return jsonify({
+            'error': 'No file selected',
+            'message': 'Please select a valid image file'
+        }), 400
 
     # image_file = request.files['image']
     # return "www"
-    image_path = "./" + image_file.filename
+    image_path = os.path.join(script_dir, image_file.filename)
     image_file.save(image_path)
     print("image_path:", image_path)
     image = preprocess_image(image_path)
@@ -62,10 +80,8 @@ def predict():
         }
     
     return jsonify(response)
-    # return top3_class_names[0]
-
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host='127.0.0.1', port=5000, debug=True)
         
             
